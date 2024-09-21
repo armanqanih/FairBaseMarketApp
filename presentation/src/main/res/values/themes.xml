@@ -1,6 +1,7 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.QuotesApp" parent="Theme.AppCompat.Light.NoActionBar">
+
 
     </style>
 </resources>

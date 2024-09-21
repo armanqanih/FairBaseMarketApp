@@ -12,8 +12,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-
-
+import org.lotka.xenonx.presentation.theme.CleanArchitectureMovieAppTheme
 
 
 @AndroidEntryPoint
@@ -27,21 +26,23 @@ class HomeActivity : AppCompatActivity() {
             val keyboardController = LocalSoftwareKeyboardController.current
 
 
-
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                if (keyboardController != null) {
-                    HomeApp(
-                        activity = this@HomeActivity,
-                        navController = navController,
-                        onNavigateToRecipeDetailScreen = {
+            CleanArchitectureMovieAppTheme {
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    if (keyboardController != null) {
+                        HomeApp(
+                            activity = this@HomeActivity,
+                            navController = navController,
+                            onNavigateToRecipeDetailScreen = {
                             },
-                        isDarkTheme = false,
-                        onToggleTheme = { },
-                        keyboardController = keyboardController,
+                            isDarkTheme = false,
+                            onToggleTheme = { },
+                            keyboardController = keyboardController,
 
-                    )
+                            )
+                    }
                 }
             }
+
         }
 
 

@@ -48,8 +48,8 @@
     -keep class * extends androidx.lifecycle.ViewModel { *; }
 
 
-    -keep class org.lotka.xenonx.data.model** { *; }
-    -keep class org.lotka.xenonx.domain.model** { *; }
+    -keep class org.lotka.xenon.data.model** { *; }
+    -keep class org.lotka.xenon.domain.model** { *; }
 
 
 

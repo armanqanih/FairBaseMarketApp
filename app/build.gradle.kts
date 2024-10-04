@@ -12,7 +12,7 @@ plugins {
 android {
     compileSdk =  34
     defaultConfig {
-        applicationId = "org.lotka.xenonx"
+        applicationId = "org.lotka.xenon"
         minSdk =  21
         targetSdk = 34
         versionCode = 164
@@ -34,8 +34,13 @@ android {
         }
     }
 
+    buildFeatures{
+        viewBinding = true
+    }
+
+
     buildTypes {
-        namespace = "org.lotka.xenonx"
+        namespace = "org.lotka.xenon"
         getByName("debug")  {
 
             //turn on for release

@@ -1,44 +1,26 @@
 {
   "project_info": {
-    "project_number": "854882998495",
-    "firebase_url": "https://lotka-xenonx-default-rtdb.europe-west1.firebasedatabase.app",
-    "project_id": "lotka-xenonx",
-    "storage_bucket": "lotka-xenonx.appspot.com"
+    "project_number": "1051080135345",
+    "project_id": "marketingapp-ec5a9",
+    "storage_bucket": "marketingapp-ec5a9.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:854882998495:android:0169aabc2a1569692f316a",
+        "mobilesdk_app_id": "1:1051080135345:android:422114171666256f68c890",
         "android_client_info": {
-          "package_name": "org.lotka.xenonx"
+          "package_name": "org.lotka.xenon"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "854882998495-u5n2ulbur2mjr6d8n1gi9fb9eso7gbmb.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAX5ia5HKjbw7bwhvL19LewEbe9oC8xEwQ"
+          "current_key": "AIzaSyB4ybMBdgGMsjAiy1xehMF0AkHGOFVdbBQ"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "854882998495-2k1bcdidra4d2vslhp3mh41kr5c7sqll.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "854882998495-c3v5tk5ato85vohq9jhlpvocp0isnim4.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "org.lokta.xenonx"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

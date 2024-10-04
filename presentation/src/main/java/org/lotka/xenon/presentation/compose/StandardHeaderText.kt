@@ -13,10 +13,11 @@ import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun StandardHeaderText(
+    modifier: Modifier=Modifier,
     name: String = "",
     onSeeAllTextClick: () -> Unit = {}
 ){
-    Row (modifier = Modifier.fillMaxWidth(),
+    Row (modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
         ){

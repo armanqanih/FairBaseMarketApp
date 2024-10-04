@@ -5,16 +5,16 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.lotka.xenon.domain.usecase.GetCategoriesUseCase
+import org.lotka.xenon.domain.usecase.GetItemListUseCase
 import org.lotka.xenon.domain.util.Resource
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getCategoriesUseCase: GetCategoriesUseCase
+    private val getCategoriesUseCase: GetCategoriesUseCase,
+    private val getItemListUseCase: GetItemListUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -22,6 +22,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         getCategories()
+        getItems()
     }
 
     private fun getCategories() {
@@ -48,4 +49,30 @@ class HomeViewModel @Inject constructor(
         }
 
     }
+
+    private fun getItems() {
+        viewModelScope.launch {
+            getItemListUseCase().collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        _state.value = _state.value.copy(
+                            isLoading = false,
+                            itemsList = result.data ?: emptyList(),
+                        )
+                    }
+                    is Resource.Error -> {
+                        _state.value = _state.value.copy(
+                            error = result.message ?: "An unexpected error occurred",
+                            isLoading = false
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(isLoading = false)
+                    }
+                }
+            }
+        }
+
+    }
+
 }

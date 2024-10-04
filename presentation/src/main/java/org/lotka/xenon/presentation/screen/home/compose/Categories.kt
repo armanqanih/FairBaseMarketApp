@@ -52,7 +52,7 @@ fun Categories(
     categories: List<Category>
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        StandardHeaderText("Categories")
+        StandardHeaderText(name = "Categories", onSeeAllTextClick = {})
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -78,7 +78,8 @@ fun CategoryItem(
     // Animate the background color change
     val backgroundColor by animateColorAsState(
         targetValue = if (isClicked.value) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground,
-        animationSpec = tween(durationMillis = 500) // Smooth transition over 500 milliseconds
+        animationSpec = tween(durationMillis = 500),
+        label = "" // Smooth transition over 500 milliseconds
     )
 
     Row(

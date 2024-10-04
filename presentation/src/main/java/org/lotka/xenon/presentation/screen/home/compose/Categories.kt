@@ -1,7 +1,15 @@
 package org.lotka.xenon.presentation.screen.home.compose
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +24,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,6 +42,7 @@ import coil.size.Size
 import org.lotka.xenon.domain.model.Category
 import org.lotka.xenon.domain.util.Constants.SpaceLarge
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
+import org.lotka.xenon.domain.util.Constants.SpaceSmall
 import org.lotka.xenon.presentation.compose.StandardHeaderText
 import org.lotka.xenon.presentation.screen.home.HomeViewModel
 
@@ -56,6 +66,8 @@ fun Categories(
         }
     }
 }
+
+
 @Composable
 fun CategoryItem(
     category: Category,
@@ -63,13 +75,23 @@ fun CategoryItem(
 ) {
     val isClicked = remember { mutableStateOf(false) }
 
+    // Animate the background color change
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isClicked.value) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground,
+        animationSpec = tween(durationMillis = 500) // Smooth transition over 500 milliseconds
+    )
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                if (isClicked.value) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground,
+                color = backgroundColor,
                 shape = RoundedCornerShape(SpaceLarge)
             )
+            .clickable {
+                isClicked.value = !isClicked.value
+                category.title?.let { onItemClick(it) }
+            }
             .padding(SpaceMedium.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -80,7 +102,7 @@ fun CategoryItem(
             },
             modifier = Modifier
                 .clip(RoundedCornerShape(SpaceLarge))
-                .size(40.dp)
+                .size(28.dp)
                 .background(MaterialTheme.colors.onBackground)
         ) {
             Image(
@@ -88,29 +110,34 @@ fun CategoryItem(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(category.picUrl)
                         .crossfade(true)
-                        .error(android.R.drawable.ic_menu_report_image) // Add fallback image on error
-                        .placeholder(android.R.drawable.ic_menu_gallery) // Placeholder while loading
-                        .size(Size.ORIGINAL) // Adjust size if needed
-                        .scale(Scale.FILL)  // Optional scaling behavior
+                        .error(android.R.drawable.ic_menu_report_image)
+                        .placeholder(android.R.drawable.ic_menu_gallery)
+                        .size(Size.ORIGINAL)
+                        .scale(Scale.FILL)
                         .build()
                 ),
                 contentDescription = null,
                 modifier = Modifier
-                    .clip(RoundedCornerShape(SpaceLarge))
-                    .size(64.dp) // Set a size for the image
+                    .background(color = backgroundColor)
+                    .clip(RoundedCornerShape(SpaceLarge.dp))
+                    .size(64.dp)
             )
         }
 
-        if (isClicked.value) {
+        // Animated visibility for the title text
+        AnimatedVisibility(
+            visible = isClicked.value,
+            enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
+            exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
+        ) {
             category.title?.let {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = SpaceMedium.dp) // Space between the icon and the text
+                    modifier = Modifier.padding(start = SpaceSmall.dp)
                 )
             }
         }
     }
 }
-

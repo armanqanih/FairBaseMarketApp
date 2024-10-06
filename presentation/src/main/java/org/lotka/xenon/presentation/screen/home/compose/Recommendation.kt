@@ -2,6 +2,7 @@ package org.lotka.xenon.presentation.screen.home.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,10 +38,12 @@ import coil.size.Size
 import org.lotka.xenon.domain.model.Items
 import org.lotka.xenon.domain.util.Constants.SpaceLarge
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
+import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 
 
 @Composable
 fun Recommendation(
+    onNavigateToDetail:(String)->Unit ={},
     items: Items,
     modifier: Modifier = Modifier
 ) {
@@ -52,6 +55,12 @@ fun Recommendation(
             modifier = Modifier
                 .width(200.dp)
                 .height(170.dp)
+                .clickable {
+                onNavigateToDetail(
+                    ScreensNavigation.DetailScreen.route
+                    + "/${items.categoryId.toString()}"
+                )
+                }
                 .clip(RoundedCornerShape(SpaceMedium))
                 .background(MaterialTheme.colors.onBackground)
         ) {
@@ -69,6 +78,7 @@ fun Recommendation(
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(SpaceLarge.dp)
                     .clip(RoundedCornerShape(SpaceLarge.dp))
             )
             IconButton(

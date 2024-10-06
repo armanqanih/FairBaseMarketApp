@@ -47,12 +47,13 @@ fun HomeApp(
         content = { _ ->
             NavHost(
                 navController = navController,
-                startDestination = ScreensNavigation.DetailScreen.route,
+                startDestination = ScreensNavigation.HomeScreen.route,
             ) {
                 composable(
                     route = ScreensNavigation.HomeScreen.route,
                 ) {
                     HomeScreen(
+                        onNavigateToDetail = navController::navigate,
                         onNavigateToSeeAll = navController::navigate
                     )
 
@@ -73,7 +74,9 @@ fun HomeApp(
 
                 }
                 composable(
-                    route = ScreensNavigation.DetailScreen.route,
+                    route = ScreensNavigation.DetailScreen.route + "/{itemId}",
+                    arguments = listOf(navArgument("itemId")
+                    { type = NavType.StringType })
                 ) {
                     DetailScreen()
 

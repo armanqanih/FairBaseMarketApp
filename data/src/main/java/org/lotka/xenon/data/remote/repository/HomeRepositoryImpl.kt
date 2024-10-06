@@ -61,6 +61,26 @@ class HomeRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getDetailItem(itemId: String): Flow<Resource<Items>> = flow {
+        try {
+            emit(Resource.Loading(true))
+
+            val itemReference = realtimeDatabase.getReference("Items/$itemId")
+            val snapshot = itemReference.get().await()
+
+            val item = snapshot.getValue(Items::class.java)
+            if (item != null) {
+                emit(Resource.Success(item))
+            } else {
+                emit(Resource.Error("Item not found"))
+            }
+
+            emit(Resource.Loading(false))
+        } catch (e: Exception) {
+            emit(Resource.Error("Failed to fetch item detail: ${e.message}"))
+        }
+    }
+
     override suspend fun getItemsByCategory(categoryId: Int): Flow<Resource<List<Items>>>  = flow {
         try {
             emit(Resource.Loading(true))

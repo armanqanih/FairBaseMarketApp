@@ -1,36 +1,28 @@
-package org.lotka.xenon.presentation.screen.detail
+package org.lotka.xenon.presentation.screen.detail.compose
 
-import android.widget.Space
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,10 +42,11 @@ import org.lotka.xenon.presentation.R
 
 @Composable
 fun DetailItem(
-
+  item:Items
 ) {
 
-
+    var selectedImage by remember { mutableStateOf(item.picUrl?.firstOrNull()) }
+    var selectedModel by remember { mutableStateOf(item.model?.firstOrNull()) }
 
         Column (modifier = Modifier.fillMaxWidth()
             , verticalArrangement = Arrangement.spacedBy(SpaceLarge.dp)
@@ -70,9 +63,7 @@ fun DetailItem(
                 Image(
                     painter = rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(
-                                R.drawable.cat2_1
-                            )
+                            .data(selectedImage)
                             .crossfade(true)
                             .error(android.R.drawable.ic_menu_report_image)
                             .placeholder(android.R.drawable.ic_menu_gallery)
@@ -91,28 +82,32 @@ fun DetailItem(
 
 
             LazyRow (modifier = Modifier.fillMaxWidth()
-
                 , horizontalArrangement = Arrangement.spacedBy(SpaceSmall.dp)
             ){
-                items(5){
-                    ImageOfToolsRow(image = "")
+                items(item.picUrl ?: emptyList()) { imageUrl ->
+                    ImageOfToolsRow(
+                        image = imageUrl,
+                        onImageSelected = { selectedImage = imageUrl } // Update selected image when clicked
+                    )
                 }
             }
+
             Row (modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
-                Text(
-                    modifier = Modifier.weight(8f),
-                    text = "Business Laptop",
-                    style = MaterialTheme.typography.h2,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colors.onSurface
-                    , fontWeight = FontWeight.SemiBold
-                )
+                item?.title?.let {
+                    Text(
+                        modifier = Modifier.weight(8f),
+                        text = it,
+                        style = MaterialTheme.typography.h2,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colors.onSurface, fontWeight = FontWeight.SemiBold
+                    )
+                }
                 Text(
                     modifier = Modifier.weight(2f),
-                    text = "$500",
+                    text = item.price.toString(),
                     style = MaterialTheme.typography.h2,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -145,7 +140,7 @@ fun DetailItem(
 
                     Text(
 
-                        text = "4.7 Rating",
+                        text = "${item.rating} Rating",
                         style = MaterialTheme.typography.body1,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -162,27 +157,26 @@ fun DetailItem(
             LazyRow (modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(SpaceMedium.dp)
             ){
-                items(3){
-                    ToolsModel(modelText = "")
+                items(item.model ?: emptyList()) { toolsModel ->
+                    ToolsModel(
+                        toolsModel = toolsModel,
+                        isSelected = toolsModel == selectedModel,  // Check if the model is selected
+                        onModelSelected = {
+                            selectedModel = toolsModel // Update selected model on click
+                        }
+                    )
                 }
-
-
-
             }
 
 
-            Text(text = "How do you prioritize tasks when working on multiple features simultaneously? \n" +
-                    "Possible Answer: \n" +
-                    "Describe how you handle deadlines, prioritize features, and deal with potential blockers. It’s \n" +
-                    "important to show that you can balance multiple responsibilities without compromising \n" +
-                    "quality"   +"Describe how you handle deadlines, prioritize features, and deal with potential blockers. It’s \n" +
-                    "important to show that you can balance multiple responsibilities without compromising \n" +
-                    "quality",
-                style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.surface,
-                fontWeight = FontWeight.SemiBold
+            item.description?.let {
+                Text(text = it,
+                    style = MaterialTheme.typography.body2,
+                    color = MaterialTheme.colors.surface,
+                    fontWeight = FontWeight.SemiBold
 
-            )
+                )
+            }
 
 
 

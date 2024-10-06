@@ -1,9 +1,7 @@
 package org.lotka.xenon.presentation.screen.detail
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,14 +14,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.NotificationsNone
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,27 +27,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
-import coil.size.Scale
-import coil.size.Size
 import org.lotka.xenon.domain.util.Constants.SpaceLarge
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.domain.util.Constants.SpaceSmall
-import org.lotka.xenon.presentation.R
 import org.lotka.xenon.presentation.compose.StandardTopBar
-import org.lotka.xenon.presentation.screen.home.HomeViewModel
-import org.lotka.xenon.presentation.screen.see_all.SeeAllViewModel
+import org.lotka.xenon.presentation.screen.detail.compose.DetailItem
 
 @Composable
 fun DetailScreen(
-    viewModel: HomeViewModel = hiltViewModel(),
+    viewModel: DetailViewModelViewModel = hiltViewModel(),
 ) {
-    val state = viewModel.state.collectAsState().value
 
+val state = viewModel.state.collectAsState().value
     Scaffold(modifier = Modifier.fillMaxSize(),
         backgroundColor = MaterialTheme.colors.background,
         bottomBar = {
@@ -59,9 +48,10 @@ fun DetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(80.dp) // Add a fixed height for bottomBar to prevent it from being pushed off-screen
-                    .padding(start = SpaceSmall.dp,
+                    .padding(
+                        start = SpaceSmall.dp,
                         end = SpaceSmall.dp
-                        )
+                    )
                     .background(MaterialTheme.colors.background), // Ensure the background color is applied
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(SpaceLarge.dp)
@@ -107,7 +97,8 @@ fun DetailScreen(
         }, content = {
             Column(
                 modifier = Modifier
-                    .fillMaxSize().padding(it)
+                    .fillMaxSize()
+                    .padding(it)
                     .padding(start = SpaceSmall.dp, end = SpaceSmall.dp)
                 , verticalArrangement = Arrangement.spacedBy(SpaceMedium.dp)
             ) {
@@ -135,7 +126,7 @@ fun DetailScreen(
 
                 LazyColumn() {
                     item {
-                        DetailItem()
+                        state?.item?.let { it1 -> DetailItem(item = it1) }
                     }
                 }
 

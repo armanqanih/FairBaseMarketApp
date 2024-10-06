@@ -41,7 +41,8 @@ import org.lotka.xenon.presentation.screen.home.compose.Recommendation
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToSeeAll:(String)-> Unit = {}
+    onNavigateToSeeAll:(String)-> Unit = {},
+    onNavigateToDetail:(String)-> Unit = {}
 ){
    val state = viewModel.state.collectAsState().value
     Scaffold(modifier = Modifier.fillMaxSize(),
@@ -139,7 +140,9 @@ fun HomeScreen(
                     ) {
 
                         for (item in rowItems) {
-                            Recommendation(item, Modifier.weight(1f))
+                            Recommendation(
+                                onNavigateToDetail = onNavigateToDetail,
+                                item, Modifier.weight(1f))
                         }
 
 

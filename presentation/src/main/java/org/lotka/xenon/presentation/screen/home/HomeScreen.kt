@@ -41,6 +41,7 @@ import org.lotka.xenon.presentation.screen.home.compose.Recommendation
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
+    onNavigateToSeeAll:(String)-> Unit = {}
 ){
    val state = viewModel.state.collectAsState().value
     Scaffold(modifier = Modifier.fillMaxSize(),
@@ -122,26 +123,28 @@ fun HomeScreen(
                     HeaderSection()
                 }
                 item {
-                    Categories(categories = state.categories)
+                    Categories(
+                        onNavigateToSeeAllScreen = onNavigateToSeeAll ,
+                        categories = state.categories)
                 }
                 item {
-                    StandardHeaderText(name = "Recommendations",
+                    StandardHeaderText(
+                        name = "Recommendations",
                         onSeeAllTextClick = {}) }
                 items(state.itemsList.chunked(2)) { rowItems ->
 
-                    // Chunk the list into pairs of two items
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp) // Space between the items
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        // For each item in the row, display it using the Recommendation composable
+
                         for (item in rowItems) {
-                            Recommendation(item, Modifier.weight(1f)) // Equal space for each item
+                            Recommendation(item, Modifier.weight(1f))
                         }
 
-                        // If there is an odd number of items, fill the remaining space in the last row
+
                         if (rowItems.size < 2) {
-                            Box(modifier = Modifier.weight(1f)) {} // Empty box to fill the remaining space
+                            Box(modifier = Modifier.weight(1f)) {}
                         }
                     }
 

@@ -5,7 +5,12 @@ package org.lotka.xenon.domain.util
 object Constants {
 
     const val SPLASH_SCREEN_DURATION = 3000L
-
+    const val PC = "Pc"
+    const val SMARTPHONE = "Smartphone"
+    const val HEADPHONE = "Headphone"
+    const val CONSOLE = "Console"
+    const val CAMERA = "Camera"
+    const val SMARTWATCH = "Smartwatch"
 
 
     val SpaceSmall = 8

@@ -9,5 +9,6 @@ interface HomeRepository {
 
     fun getCategories(): Flow<Resource<List<Category>>>
     fun getGetItem(): Flow<Resource<List<Items>>>
+    suspend fun getItemsByCategory(categoryId: Int):  Flow<Resource<List<Items>>>
 
 }

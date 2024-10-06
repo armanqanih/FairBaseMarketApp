@@ -39,17 +39,20 @@ import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.size.Scale
 import coil.size.Size
+import kotlinx.coroutines.delay
 import org.lotka.xenon.domain.model.Category
 import org.lotka.xenon.domain.util.Constants.SpaceLarge
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.domain.util.Constants.SpaceSmall
 import org.lotka.xenon.presentation.compose.StandardHeaderText
 import org.lotka.xenon.presentation.screen.home.HomeViewModel
+import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 
 
 @Composable
 fun Categories(
-    categories: List<Category>
+    categories: List<Category>,
+    onNavigateToSeeAllScreen:(String)->Unit={}
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         StandardHeaderText(name = "Categories", onSeeAllTextClick = {})
@@ -60,7 +63,12 @@ fun Categories(
             items(categories) { category ->
                 CategoryItem(
                     category = category,
-                    onItemClick = {}
+                    onItemClick = {
+                        onNavigateToSeeAllScreen(
+                            ScreensNavigation.SeeAllScreen.route + "/${category.id}"
+
+                        )
+                    }
                     )
             }
         }
@@ -71,7 +79,7 @@ fun Categories(
 @Composable
 fun CategoryItem(
     category: Category,
-    onItemClick: (String) -> Unit
+    onItemClick: () -> Unit
 ) {
     val isClicked = remember { mutableStateOf(false) }
 
@@ -91,7 +99,7 @@ fun CategoryItem(
             )
             .clickable {
                 isClicked.value = !isClicked.value
-                category.title?.let { onItemClick(it) }
+                category.title?.let { onItemClick() }
             }
             .padding(SpaceMedium.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -99,7 +107,7 @@ fun CategoryItem(
         IconButton(
             onClick = {
                 isClicked.value = !isClicked.value
-                category.title?.let { onItemClick(it) }
+                category.title?.let { onItemClick() }
             },
             modifier = Modifier
                 .clip(RoundedCornerShape(SpaceLarge))

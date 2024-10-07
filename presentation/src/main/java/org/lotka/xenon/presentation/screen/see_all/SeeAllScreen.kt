@@ -35,14 +35,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Scale
 import coil.size.Size
+import kotlinx.coroutines.flow.Flow
 import org.lotka.xenon.domain.model.Items
+import org.lotka.xenon.domain.util.Constants.CAMERA
+import org.lotka.xenon.domain.util.Constants.CONSOLE
+import org.lotka.xenon.domain.util.Constants.HEADPHONE
+import org.lotka.xenon.domain.util.Constants.PC
+import org.lotka.xenon.domain.util.Constants.SMARTPHONE
+import org.lotka.xenon.domain.util.Constants.SMARTWATCH
 import org.lotka.xenon.domain.util.Constants.SpaceLarge
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.domain.util.Constants.SpaceSmall
+import org.lotka.xenon.domain.util.Resource
 import org.lotka.xenon.presentation.compose.StandardTopBar
 import org.lotka.xenon.presentation.screen.home.HomeViewModel
 import org.lotka.xenon.presentation.screen.see_all.compose.SeeAllItem
@@ -50,21 +60,32 @@ import org.lotka.xenon.presentation.screen.see_all.compose.SeeAllItem
 @Composable
 fun SeeAllScreen(
     viewModel: SeeAllViewModel = hiltViewModel(),
-    categoryId:Int,
-    onNavigateUp:()-> Unit= {}
-){
+    selectedCatgory: String,
+    onNavigateUp: () -> Unit = {},
+) {
 
     val state = viewModel.state.collectAsState().value
-    LaunchedEffect(categoryId) {
-        viewModel.getItemsByCategoryId(categoryId) // Fetch items based on category ID
+    val itemList = state.itemsList.collectAsLazyPagingItems()
+
+    var title = ""
+
+    when (selectedCatgory) {
+        PC -> {  title = "Pc"   }
+        SMARTPHONE -> { title = "Smartphone" }
+        HEADPHONE -> { title = "Headphone" }
+        CONSOLE -> { title = "Console"  }
+        CAMERA -> { title = "Camera" }
+        SMARTWATCH -> { title = "smartwatch" }
     }
+
 
     Column(modifier = Modifier.fillMaxWidth()) {
         StandardTopBar(
             showArrowBackIosNew = true,
             onNavigateUp = onNavigateUp,
             title = {
-                Text(text = "             PC",
+                Text(
+                    text = title,
                     style = MaterialTheme.typography.h1,
                     color = MaterialTheme.colors.onSurface,
                     fontWeight = FontWeight.Bold
@@ -72,16 +93,16 @@ fun SeeAllScreen(
             }
         )
         Spacer(modifier = Modifier.height(SpaceSmall.dp))
-        LazyVerticalGrid(columns = GridCells.Fixed(2),
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(SpaceSmall.dp),
             horizontalArrangement = Arrangement.spacedBy(SpaceMedium.dp),
             verticalArrangement = Arrangement.spacedBy(SpaceMedium.dp)
-            ) {
-            items(state.itemsList) { item->
-
-            SeeAllItem(items = item )
+        ) {
+            items(itemList.itemCount) { index ->
+                itemList[index]?.let { SeeAllItem(items = it) }
             }
 
         }

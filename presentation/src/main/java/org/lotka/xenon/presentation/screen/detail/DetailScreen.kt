@@ -37,6 +37,7 @@ import org.lotka.xenon.presentation.screen.detail.compose.DetailItem
 
 @Composable
 fun DetailScreen(
+    onNavigateUp:()-> Unit = {},
     viewModel: DetailViewModelViewModel = hiltViewModel(),
 ) {
 
@@ -104,6 +105,7 @@ val state = viewModel.state.collectAsState().value
             ) {
                 StandardTopBar(
                     showArrowBackIosNew = true,
+                    onNavigateUp = onNavigateUp,
                     actions = {
                         IconButton(
                             onClick = { },

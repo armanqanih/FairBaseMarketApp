@@ -61,15 +61,16 @@ fun HomeApp(
                 }
                 composable(
                     route = ScreensNavigation.SeeAllScreen.route + "/{categoryId}",
-                    arguments = listOf(navArgument("categoryId") { type = NavType.IntType })  // Pass categoryId
-                ) { backStackEntry ->
-                    val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0  // Get categoryId
-                    categoryId?.let {
-                    SeeAllScreen(
-                        categoryId = it
-                        ,onNavigateUp = navController::navigateUp)
+                    arguments = listOf(navArgument("categoryId")
+                    { type = NavType.StringType })  // Pass categoryId
+                ) {
+                   // Get categoryId
 
-                    }
+                    SeeAllScreen(
+                        selectedCatgory = it.arguments?.getString("categoryId") ?: "1",
+                        onNavigateUp = navController::navigateUp)
+
+
 
 
                 }
@@ -78,7 +79,9 @@ fun HomeApp(
                     arguments = listOf(navArgument("itemId")
                     { type = NavType.StringType })
                 ) {
-                    DetailScreen()
+                    DetailScreen(
+                        onNavigateUp = navController::navigateUp
+                    )
 
 
                 }

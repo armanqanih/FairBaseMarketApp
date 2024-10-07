@@ -3,6 +3,7 @@ package org.lotka.xenon.presentation.screen.see_all
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,35 +20,33 @@ class SeeAllViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ):ViewModel(){
 
+
+    val pc = getItemByCategoryUseCase("PC").cachedIn(viewModelScope)
+    val smartphone = getItemByCategoryUseCase("SMARTPHONE").cachedIn(viewModelScope)
+    val headphone = getItemByCategoryUseCase("HEADPHONE").cachedIn(viewModelScope)
+    val console = getItemByCategoryUseCase("CONSOLE").cachedIn(viewModelScope)
+    val camera = getItemByCategoryUseCase("CAMERA").cachedIn(viewModelScope)
+    val smartwatch = getItemByCategoryUseCase("CAMERA").cachedIn(viewModelScope)
+
     private val _state = MutableStateFlow(SeeAllState())
     val state = _state.asStateFlow()
 
-//    init {
-//       savedStateHandle.get<Int>("categoryId")?.let { id->
-//               getItemsByCategoryId(id)
-//
-//       }
-//    }
+    init {
+        savedStateHandle.get<String>("categoryId")?.let { id ->
+            getItemsByCategoryId(id)
+        }
+
+    }
 
 
-      fun getItemsByCategoryId(categoryId: Int) {
+    fun getItemsByCategoryId(categoryId: String) {
         viewModelScope.launch {
-            getItemByCategoryUseCase.invoke(categoryId).collect { result ->
-                when (result) {
-                    is Resource.Success -> {
-                       _state.value = _state.value.copy(
-                        itemsList = result.data ?: emptyList()
-
-                       )
-                    }
-                    is Resource.Error -> {
-                        // Handle the error case here
-                    }
-                    is Resource.Loading -> {
-                        // Handle loading state
-                    }
-                }
-            }
+            val pagingDataFlow = getItemByCategoryUseCase(categoryId)
+            _state.value = _state.value.copy(
+                itemsList = pagingDataFlow,
+                isLoading = false,
+                error = null
+            )
         }
     }
 

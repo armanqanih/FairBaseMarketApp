@@ -1,4 +1,7 @@
 import android.util.Log
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -7,6 +10,7 @@ import org.lotka.xenon.domain.repository.HomeRepository
 import org.lotka.xenon.domain.util.Resource
 import javax.inject.Inject
 import kotlinx.coroutines.tasks.await
+import org.lotka.xenon.data.remote.pagination.GetItemByCategoryPagingSource
 import org.lotka.xenon.domain.model.Items
 
 class HomeRepositoryImpl @Inject constructor(
@@ -81,24 +85,15 @@ class HomeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getItemsByCategory(categoryId: Int): Flow<Resource<List<Items>>>  = flow {
-        try {
-            emit(Resource.Loading(true))
-
-            val itemsReference = realtimeDatabase.getReference("Items")
-            val snapshot = itemsReference
-                .orderByChild("categoryId")
-                .equalTo(categoryId.toDouble())  // Ensure categoryId in Firebase is stored as a Double
-                .get().await()
-
-            val itemsList = snapshot.children.mapNotNull { it.getValue(Items::class.java) }
-
-            emit(Resource.Success(itemsList))
-            emit(Resource.Loading(false))
-
-        } catch (e: Exception) {
-            Log.e("HomeRepository", "Error fetching items by category", e)
-            emit(Resource.Error("Failed to fetch items by category: ${e.message}"))
-        }
+    override fun getItemsByCategory(categoryId: String): Flow<PagingData<Items>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false // Don't show placeholders
+            ),
+            pagingSourceFactory = { GetItemByCategoryPagingSource(realtimeDatabase, categoryId) }
+        ).flow
     }
+
+
 }

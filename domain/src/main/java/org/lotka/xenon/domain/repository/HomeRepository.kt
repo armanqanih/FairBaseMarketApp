@@ -9,8 +9,13 @@ import org.lotka.xenon.domain.util.Resource
 interface HomeRepository {
 
     fun getCategories(): Flow<Resource<List<Category>>>
-    fun getGetItem(): Flow<Resource<List<Items>>>
+    fun getHomeItem(): Flow<Resource<List<Items>>>
     fun getDetailItem(itemId: String): Flow<Resource<Items>>
      fun getItemsByCategory(categoryId: String): Flow<PagingData<Items>>
+
+
+
+
+
 
 }

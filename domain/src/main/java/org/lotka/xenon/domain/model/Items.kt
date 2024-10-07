@@ -1,5 +1,6 @@
 package org.lotka.xenon.domain.model
 
+
 data class Items(
     val categoryId: Int? = null,
     val description: String? = null,

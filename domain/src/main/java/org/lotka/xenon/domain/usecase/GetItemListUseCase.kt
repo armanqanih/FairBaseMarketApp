@@ -10,7 +10,7 @@ class GetItemListUseCase @Inject constructor(
     private val homeRepository: HomeRepository
 ) {
     operator fun invoke(): Flow<Resource<List<Items>>> {
-        return homeRepository.getGetItem()
+        return homeRepository.getHomeItem()
     }
 }
 

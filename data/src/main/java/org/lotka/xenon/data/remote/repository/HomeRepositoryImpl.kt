@@ -1,99 +1,136 @@
-import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.flow.Flow
+
 import kotlinx.coroutines.flow.flow
 import org.lotka.xenon.domain.model.Category
 import org.lotka.xenon.domain.repository.HomeRepository
-import org.lotka.xenon.domain.util.Resource
-import javax.inject.Inject
+
+
 import kotlinx.coroutines.tasks.await
 import org.lotka.xenon.data.remote.pagination.GetItemByCategoryPagingSource
 import org.lotka.xenon.domain.model.Items
 
+
+import kotlinx.coroutines.flow.first
+
+import org.lotka.xenon.data.remote.dao.CategoryDao
+import org.lotka.xenon.data.remote.dao.ItemsDao
+import org.lotka.xenon.data.remote.dao.entity.toCategory
+import org.lotka.xenon.data.remote.dao.entity.toCategoryEntity
+import org.lotka.xenon.data.remote.dao.entity.toItems
+import org.lotka.xenon.data.remote.dao.entity.toItemsEntity
+import org.lotka.xenon.domain.util.Resource
+import javax.inject.Inject
+
+
 class HomeRepositoryImpl @Inject constructor(
-    private val realtimeDatabase: FirebaseDatabase
+    private val realtimeDatabase: FirebaseDatabase,
+    private val categoryDao: CategoryDao,
+    private val itemsDao: ItemsDao
 ) : HomeRepository {
 
     override fun getCategories(): Flow<Resource<List<Category>>> = flow {
-        try {
-            emit(Resource.Loading(true))
+        // First check if categories are available in Room
+        val cachedCategories = categoryDao.getAllCategories().first()
+        if (cachedCategories.isNotEmpty()) {
+            emit(Resource.Success(cachedCategories.map { it.toCategory() }))
+        } else {
+            // Fetch from Firebase if Room is empty
+            try {
+                emit(Resource.Loading(true))
+                val categories = mutableListOf<Category>()
 
-            val categories = mutableListOf<Category>()
+                val categoriesReference = realtimeDatabase.getReference("Category")
+                val snapshot = categoriesReference.get().await()
 
-            val categoriesReference = realtimeDatabase.getReference("Category")
-            val snapshot = categoriesReference.get().await()
-
-            snapshot.children.forEach { dataSnapshot ->
-                val category = dataSnapshot.getValue(Category::class.java)
-                if (category != null) {
-                    categories.add(category)
+                snapshot.children.forEach { dataSnapshot ->
+                    val category = dataSnapshot.getValue(Category::class.java)
+                    if (category != null) {
+                        categories.add(category)
+                    }
                 }
+
+                // Save to Room after fetching
+                categoryDao.saveCategories(categories.map { it.toCategoryEntity() })
+
+                emit(Resource.Success(categories))
+                emit(Resource.Loading(false))
+
+            } catch (e: Exception) {
+                emit(Resource.Error("Failed to fetch categories: ${e.message}"))
             }
-
-            emit(Resource.Success(categories))
-            emit(Resource.Loading(false))
-
-        } catch (e: Exception) {
-            emit(Resource.Error("Failed to fetch categories: ${e.message}"))
         }
     }
 
-    override fun getGetItem(): Flow<Resource<List<Items>>>  = flow {
-        try {
-            emit(Resource.Loading(true))
+    override fun getHomeItem(): Flow<Resource<List<Items>>> = flow {
+        val cachedItems = itemsDao.getAllItems().first()
+        if (cachedItems.isNotEmpty()) {
+            emit(Resource.Success(cachedItems.map { it.toItems() }))
+        } else {
+            try {
+                emit(Resource.Loading(true))
+                val itemsList = mutableListOf<Items>()
 
-            val itemsList = mutableListOf<Items>()
+                val itemsReference = realtimeDatabase.getReference("Items")
+                val snapshot = itemsReference.get().await()
 
-            val ItemsReference = realtimeDatabase.getReference("Items")
-            val snapshot = ItemsReference.get().await()
-
-            snapshot.children.forEach { dataSnapshot ->
-                val items = dataSnapshot.getValue(Items::class.java)
-                if (items != null) {
-                    itemsList.add(items)
+                snapshot.children.forEach { dataSnapshot ->
+                    val items = dataSnapshot.getValue(Items::class.java)
+                    if (items != null) {
+                        itemsList.add(items)
+                    }
                 }
+
+                // Save fetched items to Room
+                itemsDao.saveHomeItems(itemsList.map { it.toItemsEntity() })
+
+                emit(Resource.Success(itemsList))
+                emit(Resource.Loading(false))
+
+            } catch (e: Exception) {
+                emit(Resource.Error("Failed to fetch items: ${e.message}"))
             }
-
-            emit(Resource.Success(itemsList))
-            emit(Resource.Loading(false))
-
-        } catch (e: Exception) {
-            emit(Resource.Error("Failed to fetch categories: ${e.message}"))
         }
     }
 
     override fun getDetailItem(itemId: String): Flow<Resource<Items>> = flow {
+        // Emit loading state
+        emit(Resource.Loading(true))
+
         try {
-            emit(Resource.Loading(true))
-
-            val itemReference = realtimeDatabase.getReference("Items/$itemId")
-            val snapshot = itemReference.get().await()
-
-            val item = snapshot.getValue(Items::class.java)
-            if (item != null) {
-                emit(Resource.Success(item))
+            // Check if the item exists in Room first
+            val cachedItem = itemsDao.getItemById(itemId)
+            if (cachedItem != null) {
+                emit(Resource.Success(cachedItem.toItems()))
             } else {
-                emit(Resource.Error("Item not found"))
-            }
+                // If item is not found in Room, fetch from Firebase
+                val itemReference = realtimeDatabase.getReference("Items/$itemId")
+                val snapshot = itemReference.get().await()
 
-            emit(Resource.Loading(false))
+                val item = snapshot.getValue(Items::class.java)
+                if (item != null) {
+                    itemsDao.saveDetailItem(item.toItemsEntity())
+                    emit(Resource.Success(item))
+                } else {
+                    emit(Resource.Error("Item not found in Firebase"))
+                }
+            }
         } catch (e: Exception) {
             emit(Resource.Error("Failed to fetch item detail: ${e.message}"))
+        } finally {
+            emit(Resource.Loading(false))
         }
     }
 
+
     override fun getItemsByCategory(categoryId: String): Flow<PagingData<Items>> {
         return Pager(
-            config = PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false // Don't show placeholders
-            ),
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
             pagingSourceFactory = { GetItemByCategoryPagingSource(realtimeDatabase, categoryId) }
         ).flow
     }
-
-
 }

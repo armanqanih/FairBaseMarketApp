@@ -1,4 +1,4 @@
-package org.lotka.xenon.presentation.screen.home
+package org.lotka.xenon.presentation.screen.explore
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +12,7 @@ import org.lotka.xenon.domain.util.Resource
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class ExploreViewModel @Inject constructor(
     private val getCategoriesUseCase: GetCategoriesUseCase,
     private val getItemListUseCase: GetItemListUseCase
 ) : ViewModel() {
@@ -21,7 +21,7 @@ class HomeViewModel @Inject constructor(
 
 
 
-    private val _state = MutableStateFlow(HomeState())
+    private val _state = MutableStateFlow(ExploreState())
     val state = _state.asStateFlow()
 
     init {

@@ -9,9 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.lotka.xenon.domain.usecase.GetItemByCategoryUseCase
-import org.lotka.xenon.domain.util.Resource
-import org.lotka.xenon.presentation.screen.home.HomeState
-import org.lotka.xenon.presentation.screen.see_all.compose.SeeAllItem
 import javax.inject.Inject
 
 @HiltViewModel

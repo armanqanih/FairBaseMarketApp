@@ -1,4 +1,4 @@
-package org.lotka.xenon.presentation.screen.home.compose
+package org.lotka.xenon.presentation.screen.explore.compose
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -23,7 +23,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,19 +32,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.size.Scale
 import coil.size.Size
-import kotlinx.coroutines.delay
 import org.lotka.xenon.domain.model.Category
 import org.lotka.xenon.domain.util.Constants.SpaceLarge
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.domain.util.Constants.SpaceSmall
 import org.lotka.xenon.presentation.compose.StandardHeaderText
-import org.lotka.xenon.presentation.screen.home.HomeViewModel
 import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 
 

@@ -1,4 +1,4 @@
-package org.lotka.xenon.presentation.screen.home
+package org.lotka.xenon.presentation.screen.explore
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,15 +32,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.presentation.compose.StandardHeaderText
 import org.lotka.xenon.presentation.compose.StandardTopBar
-import org.lotka.xenon.presentation.screen.home.compose.Categories
-import org.lotka.xenon.presentation.screen.home.compose.HeaderSection
-import org.lotka.xenon.presentation.screen.home.compose.Recommendation
+import org.lotka.xenon.presentation.screen.explore.compose.Categories
+import org.lotka.xenon.presentation.screen.explore.compose.HeaderSection
+import org.lotka.xenon.presentation.screen.explore.compose.Recommendation
 
 
 
 @Composable
-fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel(),
+fun ExploreScreen(
+    viewModel: ExploreViewModel = hiltViewModel(),
     onNavigateToSeeAll:(String)-> Unit = {},
     onNavigateToDetail:(String)-> Unit = {}
 ){

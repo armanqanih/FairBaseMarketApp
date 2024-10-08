@@ -14,10 +14,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import org.lotka.xenon.presentation.screen.card.CardScreen
 import org.lotka.xenon.presentation.screen.detail.DetailScreen
-import org.lotka.xenon.presentation.screen.home.HomeScreen
+import org.lotka.xenon.presentation.screen.explore.ExploreScreen
 import org.lotka.xenon.presentation.screen.see_all.SeeAllScreen
 import org.lotka.xenon.presentation.screen.my_order.MyOrderScreen
+import org.lotka.xenon.presentation.screen.profile.ProfileScreen
+import org.lotka.xenon.presentation.screen.wish_list.WishListScreen
 
 
 import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
@@ -47,12 +50,12 @@ fun HomeApp(
         content = { _ ->
             NavHost(
                 navController = navController,
-                startDestination = ScreensNavigation.MyOrder.route,
+                startDestination = ScreensNavigation.ExploreScreen.route,
             ) {
                 composable(
-                    route = ScreensNavigation.HomeScreen.route,
+                    route = ScreensNavigation.ExploreScreen.route,
                 ) {
-                    HomeScreen(
+                    ExploreScreen(
                         onNavigateToDetail = navController::navigate,
                         onNavigateToSeeAll = navController::navigate
                     )
@@ -60,17 +63,38 @@ fun HomeApp(
 
                 }
                 composable(
+                    route = ScreensNavigation.CardScreen.route,
+                ) {
+                    CardScreen()
+
+                }
+
+                composable(
+                    route = ScreensNavigation.WishList.route,
+                ) {
+                    WishListScreen()
+
+                }
+
+                composable(
+                    route = ScreensNavigation.Profile.route,
+                ) {
+                    ProfileScreen()
+
+                }
+
+
+                composable(
                     route = ScreensNavigation.SeeAllScreen.route + "/{categoryId}",
                     arguments = listOf(navArgument("categoryId")
                     { type = NavType.StringType })  // Pass categoryId
                 ) {
-                   // Get categoryId
+                    // Get categoryId
 
                     SeeAllScreen(
                         selectedCatgory = it.arguments?.getString("categoryId") ?: "1",
-                        onNavigateUp = navController::navigateUp)
-
-
+                        onNavigateUp = navController::navigateUp
+                    )
 
 
                 }
@@ -88,7 +112,9 @@ fun HomeApp(
                 composable(
                     route = ScreensNavigation.MyOrder.route,
                 ) {
-                    MyOrderScreen()
+                    MyOrderScreen(
+                        onNavigateUp = navController::navigateUp
+                    )
 
 
                 }

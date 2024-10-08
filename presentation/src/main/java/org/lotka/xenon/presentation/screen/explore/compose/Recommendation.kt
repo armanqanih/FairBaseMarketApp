@@ -1,4 +1,4 @@
-package org.lotka.xenon.presentation.screen.home.compose
+package org.lotka.xenon.presentation.screen.explore.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

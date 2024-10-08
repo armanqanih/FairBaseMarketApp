@@ -17,7 +17,7 @@ import androidx.navigation.navArgument
 import org.lotka.xenon.presentation.screen.detail.DetailScreen
 import org.lotka.xenon.presentation.screen.home.HomeScreen
 import org.lotka.xenon.presentation.screen.see_all.SeeAllScreen
-import org.lotka.xenon.presentation.screen.shop.ShopScreen
+import org.lotka.xenon.presentation.screen.my_order.MyOrderScreen
 
 
 import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
@@ -47,7 +47,7 @@ fun HomeApp(
         content = { _ ->
             NavHost(
                 navController = navController,
-                startDestination = ScreensNavigation.HomeScreen.route,
+                startDestination = ScreensNavigation.MyOrder.route,
             ) {
                 composable(
                     route = ScreensNavigation.HomeScreen.route,
@@ -86,9 +86,9 @@ fun HomeApp(
 
                 }
                 composable(
-                    route = ScreensNavigation.ShopScreen.route,
+                    route = ScreensNavigation.MyOrder.route,
                 ) {
-                    ShopScreen()
+                    MyOrderScreen()
 
 
                 }

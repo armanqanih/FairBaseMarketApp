@@ -1,9 +1,6 @@
-package org.lotka.xenon.presentation.screen.my_order.compose
+package org.lotka.xenon.presentation.screen.my_card.compose
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.lotka.xenon.domain.util.Constants.SpaceLarge
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.domain.util.Constants.SpaceSmall
 

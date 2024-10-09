@@ -63,7 +63,7 @@ fun StandardScaffold(
         ),
         BottomNavItem(
             title = "Cart",
-            route = ScreensNavigation.CardScreen.route,
+            route = ScreensNavigation.MyCardScreen.route,
             selectedItem = Icons.Filled.ShoppingCart,
             unSelectedItem = Icons.Outlined.ShoppingCart,
             badgeCount = 2
@@ -80,7 +80,7 @@ fun StandardScaffold(
 
         BottomNavItem(
             title = "MyOrder",
-            route = ScreensNavigation.MyOrder.route
+            route = ScreensNavigation.MyOrderScreen.route
             ,
             selectedItem = Icons.Rounded.BorderColor,
             unSelectedItem = Icons.Rounded.BorderColor,

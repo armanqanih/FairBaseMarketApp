@@ -1,7 +1,6 @@
-package org.lotka.xenon.presentation.screen.my_order.compose
+package org.lotka.xenon.presentation.screen.my_card.compose
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth

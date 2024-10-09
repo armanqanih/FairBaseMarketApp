@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,6 +37,7 @@ import coil.request.ImageRequest
 import coil.size.Scale
 import coil.size.Size
 import org.lotka.xenon.domain.model.Items
+import org.lotka.xenon.domain.util.Constants
 import org.lotka.xenon.domain.util.Constants.SpaceLarge
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
@@ -51,6 +53,7 @@ fun Recommendation(
         modifier = modifier
             .background(MaterialTheme.colors.background)
     ) {
+        Spacer(modifier = Modifier.height(SpaceMedium.dp))
         Box(
             modifier = Modifier
                 .width(200.dp)

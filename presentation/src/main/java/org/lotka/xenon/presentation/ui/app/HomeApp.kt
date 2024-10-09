@@ -14,11 +14,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import org.lotka.xenon.presentation.screen.card.CardScreen
+import org.lotka.xenon.presentation.screen.my_order.MyOrderScreen
 import org.lotka.xenon.presentation.screen.detail.DetailScreen
 import org.lotka.xenon.presentation.screen.explore.ExploreScreen
 import org.lotka.xenon.presentation.screen.see_all.SeeAllScreen
-import org.lotka.xenon.presentation.screen.my_order.MyOrderScreen
+import org.lotka.xenon.presentation.screen.my_card.MyCardScreen
 import org.lotka.xenon.presentation.screen.profile.ProfileScreen
 import org.lotka.xenon.presentation.screen.wish_list.WishListScreen
 
@@ -63,23 +63,23 @@ fun HomeApp(
 
                 }
                 composable(
-                    route = ScreensNavigation.CardScreen.route,
+                    route = ScreensNavigation.MyOrderScreen.route,
                 ) {
-                    CardScreen()
+                    MyOrderScreen(onNavigateUp = navController::navigateUp)
 
                 }
 
                 composable(
                     route = ScreensNavigation.WishList.route,
                 ) {
-                    WishListScreen()
+                    WishListScreen(onNavigateUp = navController::navigateUp)
 
                 }
 
                 composable(
                     route = ScreensNavigation.Profile.route,
                 ) {
-                    ProfileScreen()
+                    ProfileScreen( )
 
                 }
 
@@ -110,9 +110,9 @@ fun HomeApp(
 
                 }
                 composable(
-                    route = ScreensNavigation.MyOrder.route,
+                    route = ScreensNavigation.MyCardScreen.route,
                 ) {
-                    MyOrderScreen(
+                    MyCardScreen(
                         onNavigateUp = navController::navigateUp
                     )
 

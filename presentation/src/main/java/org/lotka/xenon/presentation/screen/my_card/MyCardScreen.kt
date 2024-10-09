@@ -31,18 +31,27 @@ fun MyCardScreen(
     onNavigateUp: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
-    val cartItems = state.items
+    val items = state.items
 
-    val initialPrice = 500.0
     val deliveryPrice = 10.0
-    val itemCount = cartItems.size
+    val itemCount = items.size
 
     // Recalculate quantities only when cartItems change
-    val quantities = remember(cartItems) { mutableStateListOf(*Array(itemCount) { 1 }) }
-    val prices = List(itemCount) { initialPrice }
+    val quantities = remember(items) { mutableStateListOf(*Array(itemCount) { 1 }) }
 
+    // Calculate total price based on actual item prices and quantities
     var totalPrice by remember {
-        mutableStateOf(calculateTotalPrice(prices, quantities) + deliveryPrice)
+        mutableStateOf(
+            calculateTotalPrice(
+                items.map { it.price ?: 0.0 },
+                quantities
+            ) + deliveryPrice
+        )
+    }
+
+    // Ensure totalPrice is calculated when the screen is first shown
+    LaunchedEffect(items, quantities) {
+        totalPrice = calculateTotalPrice(items.map { it.price ?: 0.0 }, quantities) + deliveryPrice
     }
 
 
@@ -67,6 +76,7 @@ fun MyCardScreen(
                 }
             )
 
+
         }
     ) {
         if (itemCount <= 0) {
@@ -80,87 +90,87 @@ fun MyCardScreen(
                     color = MaterialTheme.colors.onSurface,
                 )
             }
-        }
-
-       else if (itemCount <= 3) {
+        } else if (itemCount <= 3) {
             Box(modifier = Modifier.fillMaxSize()) {
-
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(it), // Make LazyColumn take up available space
                     verticalArrangement = Arrangement.spacedBy(SpaceMedium.dp)
                 ) {
-                    items(cartItems) { item ->
-                        val itemIndex = cartItems.indexOf(item)
+                    item {
+                        Spacer(modifier = Modifier.height(SpaceSmall.dp))
+                    }
 
-                        // Ensure itemIndex is valid
+                    items(items) { item ->
+                        val itemIndex = items.indexOf(item)
                         if (itemIndex >= 0) {
-                            val toolTotalPrice = formatPrice((item.price ?: 0.0) * quantities[itemIndex])
+                            val toolTotalPrice =
+                                formatPrice((item.price ?: 0.0) * quantities[itemIndex])
                             MyOrderCard(
                                 nameOfTool = item.title.toString(),
-                                toolPrice = item?.price?.let { formatPrice(it) },
+                                toolPrice = item.price?.let { formatPrice(it) },
                                 toolTotalPrice = toolTotalPrice,
                                 quantityText = quantities[itemIndex].toString(),
                                 onPlusButtonClick = {
                                     quantities[itemIndex] += 1
-                                    totalPrice = calculateTotalPrice(prices, quantities) + deliveryPrice
+                                    totalPrice = calculateTotalPrice(
+                                        items.map { it.price ?: 0.0 },
+                                        quantities
+                                    ) + deliveryPrice
                                 },
                                 onMinusButtonClick = {
                                     if (quantities[itemIndex] > 1) {
                                         quantities[itemIndex] -= 1
-                                        totalPrice = calculateTotalPrice(prices, quantities) + deliveryPrice
+                                        totalPrice = calculateTotalPrice(
+                                            items.map { it.price ?: 0.0 },
+                                            quantities
+                                        ) + deliveryPrice
                                     }
                                 },
-//                            onRemoveButtonClick = {
-//                                viewModel.removeItemInCard(item.id) // Assuming Items has an id field
-//                                cartItems.remove(item)
-//                            }
-                        )}
-                    }
-                }
-
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter) // Align this column at the bottom
-                        .fillMaxWidth()
-                        .padding(bottom = SpaceMedium.dp)
-                ) {
-                    PricesTextRow(
-                        title = "SubTotal",
-                        price = "$${
-                            formatPrice(
-                                calculateTotalPrice(
-                                    prices,
-                                    quantities
-                                )
+                                toolImage = item.picUrl?.firstOrNull()
                             )
-                        }" // Format the subtotal
-                    )
-                    PricesTextRow(
-                        title = "Delivery",
-                        price = "$${formatPrice(deliveryPrice)}" // Format the delivery price
-                    )
+                        }
+                    }
 
-                    Spacer(modifier = Modifier.height(SpaceSmall.dp))
-                    Divider(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = MaterialTheme.colors.onBackground
-                    )
-                    Spacer(modifier = Modifier.height(SpaceSmall.dp))
+                    item {
+                        PricesTextRow(
+                            title = "SubTotal",
+                            price = "$${
+                                formatPrice(
+                                    calculateTotalPrice(
+                                        items.map { it.price ?: 0.0 },
+                                        quantities
+                                    )
+                                )
+                            }"
+                        )
+                        PricesTextRow(
+                            title = "Delivery",
+                            price = "$${formatPrice(deliveryPrice)}"
+                        )
 
-                    PricesTextRow(
-                        title = "Total",
-                        price = "$${formatPrice(totalPrice)}" // Format the total price
-                    )
+                        Spacer(modifier = Modifier.height(SpaceSmall.dp))
+                        Divider(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colors.onBackground
+                        )
+                        Spacer(modifier = Modifier.height(SpaceSmall.dp))
 
-                    Spacer(modifier = Modifier.height(SpaceSmall.dp))
-                    PaymentMethod()
-                    Spacer(modifier = Modifier.height(SpaceSmall.dp))
-                    StandardButton(
-                        title = "Check Out",
-                        onButtonClick = {}
-                    )
+                        PricesTextRow(
+                            title = "Total",
+                            price = "$${formatPrice(totalPrice)}"
+                        )
+
+                        Spacer(modifier = Modifier.height(SpaceSmall.dp))
+                        PaymentMethod()
+                        Spacer(modifier = Modifier.height(SpaceSmall.dp))
+                        StandardButton(
+                            modifier = Modifier.padding(bottom = SpaceSmall.dp),
+                            title = "Check Out",
+                            onButtonClick = {}
+                        )
+                    }
                 }
 
 
@@ -175,48 +185,56 @@ fun MyCardScreen(
                 verticalArrangement = Arrangement.spacedBy(SpaceMedium.dp)
             ) {
 
-                items(cartItems) { item ->
-                    val itemIndex = cartItems.indexOf(item)
+                item {
+                    Spacer(modifier = Modifier.height(SpaceSmall.dp))
+                }
+                items(items) { item ->
+                    val itemIndex = items.indexOf(item)
 
-                    // Ensure itemIndex is valid
                     if (itemIndex >= 0) {
-                        val toolTotalPrice = formatPrice((item.price ?: 0.0) * quantities[itemIndex])
+                        val toolTotalPrice =
+                            formatPrice((item.price ?: 0.0) * quantities[itemIndex])
                         MyOrderCard(
                             nameOfTool = item.title.toString(),
-                            toolPrice = item?.price?.let { formatPrice(it) },
+                            toolPrice = item.price?.let { formatPrice(it) },
                             toolTotalPrice = toolTotalPrice,
                             quantityText = quantities[itemIndex].toString(),
                             onPlusButtonClick = {
                                 quantities[itemIndex] += 1
-                                totalPrice = calculateTotalPrice(prices, quantities) + deliveryPrice
+                                totalPrice = calculateTotalPrice(
+                                    items.map { it.price ?: 0.0 },
+                                    quantities
+                                ) + deliveryPrice
                             },
                             onMinusButtonClick = {
                                 if (quantities[itemIndex] > 1) {
                                     quantities[itemIndex] -= 1
-                                    totalPrice = calculateTotalPrice(prices, quantities) + deliveryPrice
+                                    totalPrice = calculateTotalPrice(
+                                        items.map { it.price ?: 0.0 },
+                                        quantities
+                                    ) + deliveryPrice
                                 }
                             },
-//                            onRemoveButtonClick = {
-//                                viewModel.removeItemInCard(item.id) // Assuming Items has an id field
-//                                cartItems.remove(item)
-//                            }
-                    )}
+                            toolImage = item.picUrl?.firstOrNull()
+                        )
+                    }
                 }
+
                 item {
                     PricesTextRow(
                         title = "SubTotal",
                         price = "$${
                             formatPrice(
                                 calculateTotalPrice(
-                                    prices,
+                                    items.map { it.price ?: 0.0 },
                                     quantities
                                 )
                             )
-                        }" // Format the subtotal
+                        }"
                     )
                     PricesTextRow(
                         title = "Delivery",
-                        price = "$${formatPrice(deliveryPrice)}" // Format the delivery price
+                        price = "$${formatPrice(deliveryPrice)}"
                     )
 
                     Spacer(modifier = Modifier.height(SpaceSmall.dp))
@@ -228,25 +246,21 @@ fun MyCardScreen(
 
                     PricesTextRow(
                         title = "Total",
-                        price = "$${formatPrice(totalPrice)}" // Format the total price
+                        price = "$${formatPrice(totalPrice)}"
                     )
 
                     Spacer(modifier = Modifier.height(SpaceSmall.dp))
                     PaymentMethod()
                     Spacer(modifier = Modifier.height(SpaceSmall.dp))
                     StandardButton(
+                        modifier = Modifier.padding(bottom = SpaceSmall.dp),
                         title = "Check Out",
                         onButtonClick = {}
                     )
                 }
-
-
             }
-
-
         }
     }
-
 }
 
 

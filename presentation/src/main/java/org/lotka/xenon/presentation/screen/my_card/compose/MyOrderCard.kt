@@ -36,6 +36,7 @@ import org.lotka.xenon.presentation.R
 
 @Composable
 fun MyOrderCard(
+    toolImage:String? = "",
     nameOfTool:String="",
     toolPrice:String? ="",
     toolTotalPrice:String="",
@@ -43,8 +44,6 @@ fun MyOrderCard(
     onMinusButtonClick:()-> Unit = {},
     quantityText:String=""
 ) {
-
-
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -65,7 +64,7 @@ fun MyOrderCard(
                 Image(
                     painter = rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(R.drawable.cat2_1) // Image resource
+                            .data(toolImage) // Image resource
                             .crossfade(true)
                             .error(android.R.drawable.ic_menu_report_image)
                             .placeholder(android.R.drawable.ic_menu_gallery)

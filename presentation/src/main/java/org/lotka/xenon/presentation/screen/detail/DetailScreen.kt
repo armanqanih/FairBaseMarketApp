@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -21,8 +22,10 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +37,7 @@ import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.domain.util.Constants.SpaceSmall
 import org.lotka.xenon.presentation.compose.StandardTopBar
 import org.lotka.xenon.presentation.screen.detail.compose.DetailItem
+import org.lotka.xenon.presentation.util.UiEvent
 
 @Composable
 fun DetailScreen(
@@ -41,8 +45,28 @@ fun DetailScreen(
     viewModel: DetailViewModelViewModel = hiltViewModel(),
 ) {
 
-val state = viewModel.state.collectAsState().value
-    Scaffold(modifier = Modifier.fillMaxSize(),
+    val state = viewModel.state.collectAsState().value
+    val scaffoldState = rememberScaffoldState()
+
+
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is UiEvent.ShowSnakeBar -> {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = event.message
+                    )
+                }
+                UiEvent.onNavigateUp -> { onNavigateUp() }
+            }
+        }
+    }
+
+
+    Scaffold(
+        scaffoldState = scaffoldState,
+        modifier = Modifier.fillMaxSize(),
         backgroundColor = MaterialTheme.colors.background,
         bottomBar = {
             Row(
@@ -59,7 +83,9 @@ val state = viewModel.state.collectAsState().value
             ) {
 
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        viewModel.onEvent(DetailEvent.BuyNow)
+                    },
                     modifier = Modifier
                         .padding(start = SpaceMedium.dp)
                         .clip(shape = RoundedCornerShape(SpaceMedium))

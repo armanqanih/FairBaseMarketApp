@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.domain.util.Constants.SpaceSmall
 import org.lotka.xenon.presentation.compose.StandardButton
@@ -20,27 +21,30 @@ import org.lotka.xenon.presentation.compose.StandardTopBar
 import org.lotka.xenon.presentation.screen.my_card.compose.MyOrderCard
 import org.lotka.xenon.presentation.screen.my_card.compose.PaymentMethod
 import org.lotka.xenon.presentation.screen.my_card.compose.PricesTextRow
-import org.lotka.xenon.presentation.screen.my_card.compose.calculateTotalPrice
+
+import org.lotka.xenon.presentation.util.calculateTotalPrice
 import org.lotka.xenon.presentation.util.formatPrice
 
 @Composable
-fun MyCardScreen(onNavigateUp: () -> Unit = {}) {
+fun MyCardScreen(
+    viewModel: MyCardViewModel = hiltViewModel(),
+    onNavigateUp: () -> Unit = {},
+) {
+    val state by viewModel.state.collectAsState()
+    val cartItems = state.items
+
     val initialPrice = 500.0
     val deliveryPrice = 10.0
-    val itemCount = 4 // Set this to the actual count of items in the cart
-    val quantities =
-        remember { mutableStateListOf(*Array(itemCount) { 1 }) } // List to track quantities of each item
-    val prices = List(itemCount) { initialPrice } // Assume all items have the same initial price
+    val itemCount = cartItems.size
 
-    // Calculate total price initially based on initial prices and quantities
+    // Recalculate quantities only when cartItems change
+    val quantities = remember(cartItems) { mutableStateListOf(*Array(itemCount) { 1 }) }
+    val prices = List(itemCount) { initialPrice }
+
     var totalPrice by remember {
-        mutableStateOf(
-            calculateTotalPrice(
-                prices,
-                quantities
-            ) + deliveryPrice
-        )
+        mutableStateOf(calculateTotalPrice(prices, quantities) + deliveryPrice)
     }
+
 
     Scaffold(
         modifier = Modifier
@@ -65,8 +69,20 @@ fun MyCardScreen(onNavigateUp: () -> Unit = {}) {
 
         }
     ) {
+        if (itemCount <= 0) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "You Card Is Empty",
+                    style = MaterialTheme.typography.h1,
+                    color = MaterialTheme.colors.onSurface,
+                )
+            }
+        }
 
-        if (itemCount <= 3) {
+       else if (itemCount <= 3) {
             Box(modifier = Modifier.fillMaxSize()) {
 
                 LazyColumn(
@@ -75,25 +91,32 @@ fun MyCardScreen(onNavigateUp: () -> Unit = {}) {
                         .padding(it), // Make LazyColumn take up available space
                     verticalArrangement = Arrangement.spacedBy(SpaceMedium.dp)
                 ) {
-                    items(itemCount) { index ->
-                        Spacer(modifier = Modifier.height(SpaceMedium.dp))
-                        MyOrderCard(
-                            nameOfTool = "laptop",
-                            toolPrice = formatPrice(prices[index]), // Format the price
-                            toolTotalPrice = formatPrice(prices[index] * quantities[index]), // Format the total price
-                            quantityText = quantities[index].toString(),
-                            onPlusButtonClick = {
-                                quantities[index] += 1
-                                totalPrice = calculateTotalPrice(prices, quantities) + deliveryPrice
-                            },
-                            onMinusButtonClick = {
-                                if (quantities[index] > 1) {
-                                    quantities[index] -= 1
-                                    totalPrice =
-                                        calculateTotalPrice(prices, quantities) + deliveryPrice
-                                }
-                            }
-                        )
+                    items(cartItems) { item ->
+                        val itemIndex = cartItems.indexOf(item)
+
+                        // Ensure itemIndex is valid
+                        if (itemIndex >= 0) {
+                            val toolTotalPrice = formatPrice((item.price ?: 0.0) * quantities[itemIndex])
+                            MyOrderCard(
+                                nameOfTool = item.title.toString(),
+                                toolPrice = item?.price?.let { formatPrice(it) },
+                                toolTotalPrice = toolTotalPrice,
+                                quantityText = quantities[itemIndex].toString(),
+                                onPlusButtonClick = {
+                                    quantities[itemIndex] += 1
+                                    totalPrice = calculateTotalPrice(prices, quantities) + deliveryPrice
+                                },
+                                onMinusButtonClick = {
+                                    if (quantities[itemIndex] > 1) {
+                                        quantities[itemIndex] -= 1
+                                        totalPrice = calculateTotalPrice(prices, quantities) + deliveryPrice
+                                    }
+                                },
+//                            onRemoveButtonClick = {
+//                                viewModel.removeItemInCard(item.id) // Assuming Items has an id field
+//                                cartItems.remove(item)
+//                            }
+                        )}
                     }
                 }
 
@@ -152,24 +175,32 @@ fun MyCardScreen(onNavigateUp: () -> Unit = {}) {
                 verticalArrangement = Arrangement.spacedBy(SpaceMedium.dp)
             ) {
 
-                items(itemCount) { index ->
-                    Spacer(modifier = Modifier.height(SpaceMedium.dp))
-                    MyOrderCard(
-                        nameOfTool = "laptop",
-                        toolPrice = formatPrice(prices[index]), // Format the price
-                        toolTotalPrice = formatPrice(prices[index] * quantities[index]), // Format the total price
-                        quantityText = quantities[index].toString(),
-                        onPlusButtonClick = {
-                            quantities[index] += 1
-                            totalPrice = calculateTotalPrice(prices, quantities) + deliveryPrice
-                        },
-                        onMinusButtonClick = {
-                            if (quantities[index] > 1) {
-                                quantities[index] -= 1
+                items(cartItems) { item ->
+                    val itemIndex = cartItems.indexOf(item)
+
+                    // Ensure itemIndex is valid
+                    if (itemIndex >= 0) {
+                        val toolTotalPrice = formatPrice((item.price ?: 0.0) * quantities[itemIndex])
+                        MyOrderCard(
+                            nameOfTool = item.title.toString(),
+                            toolPrice = item?.price?.let { formatPrice(it) },
+                            toolTotalPrice = toolTotalPrice,
+                            quantityText = quantities[itemIndex].toString(),
+                            onPlusButtonClick = {
+                                quantities[itemIndex] += 1
                                 totalPrice = calculateTotalPrice(prices, quantities) + deliveryPrice
-                            }
-                        }
-                    )
+                            },
+                            onMinusButtonClick = {
+                                if (quantities[itemIndex] > 1) {
+                                    quantities[itemIndex] -= 1
+                                    totalPrice = calculateTotalPrice(prices, quantities) + deliveryPrice
+                                }
+                            },
+//                            onRemoveButtonClick = {
+//                                viewModel.removeItemInCard(item.id) // Assuming Items has an id field
+//                                cartItems.remove(item)
+//                            }
+                    )}
                 }
                 item {
                     PricesTextRow(

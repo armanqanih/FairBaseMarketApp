@@ -34,15 +34,14 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Scale
 import coil.size.Size
-import org.lotka.xenon.domain.model.Items
+import org.lotka.xenon.domain.model.Item
 import org.lotka.xenon.domain.util.Constants.SpaceLarge
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.domain.util.Constants.SpaceSmall
-import org.lotka.xenon.presentation.R
 
 @Composable
 fun DetailItem(
-  item:Items
+  item:Item
 ) {
 
     var selectedImage by remember { mutableStateOf(item.picUrl?.firstOrNull()) }

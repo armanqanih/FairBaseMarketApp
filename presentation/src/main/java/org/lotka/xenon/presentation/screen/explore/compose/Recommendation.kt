@@ -36,8 +36,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Scale
 import coil.size.Size
-import org.lotka.xenon.domain.model.Items
-import org.lotka.xenon.domain.util.Constants
+import org.lotka.xenon.domain.model.Item
 import org.lotka.xenon.domain.util.Constants.SpaceLarge
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
@@ -46,7 +45,7 @@ import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 @Composable
 fun Recommendation(
     onNavigateToDetail:(String)->Unit ={},
-    items: Items,
+    item: Item,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -61,7 +60,7 @@ fun Recommendation(
                 .clickable {
                 onNavigateToDetail(
                     ScreensNavigation.DetailScreen.route
-                    + "/${items.categoryId.toString()}"
+                    + "/${item.categoryId.toString()}"
                 )
                 }
                 .clip(RoundedCornerShape(SpaceMedium))
@@ -70,7 +69,7 @@ fun Recommendation(
             Image(
                 painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(items.picUrl!!.firstOrNull())
+                        .data(item.picUrl!!.firstOrNull())
                         .crossfade(true)
                         .error(android.R.drawable.ic_menu_report_image)
                         .placeholder(android.R.drawable.ic_menu_gallery)
@@ -96,7 +95,7 @@ fun Recommendation(
             }
         }
 
-        items.title?.let {
+        item.title?.let {
             Text(
                 text = it,
                 style = MaterialTheme.typography.body1,
@@ -123,7 +122,7 @@ fun Recommendation(
                     modifier = Modifier.size(20.dp)
                 )
                 Text(
-                    text = items.rating.toString(),
+                    text = item.rating.toString(),
                     style = MaterialTheme.typography.body1,
                     color = MaterialTheme.colors.onSurface,
                     maxLines = 1,
@@ -134,7 +133,7 @@ fun Recommendation(
             }
 
             Text(
-                text = "$${items.price.toString()}",
+                text = "$${item.price.toString()}",
                 style = MaterialTheme.typography.body1,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

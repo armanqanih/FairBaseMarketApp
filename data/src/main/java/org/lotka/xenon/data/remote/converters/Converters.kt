@@ -16,4 +16,7 @@ class Converters {
     fun fromListString(list: List<String>?): String? {
         return Gson().toJson(list)
     }
+
+
+
 }

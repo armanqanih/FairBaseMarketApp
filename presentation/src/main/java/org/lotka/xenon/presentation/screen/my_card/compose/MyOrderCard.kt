@@ -37,7 +37,7 @@ import org.lotka.xenon.presentation.R
 @Composable
 fun MyOrderCard(
     nameOfTool:String="",
-    toolPrice:String="",
+    toolPrice:String? ="",
     toolTotalPrice:String="",
     onPlusButtonClick:()-> Unit = {},
     onMinusButtonClick:()-> Unit = {},

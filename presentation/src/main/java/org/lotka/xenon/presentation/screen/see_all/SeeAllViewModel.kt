@@ -40,7 +40,7 @@ class SeeAllViewModel @Inject constructor(
         viewModelScope.launch {
             val pagingDataFlow = getItemByCategoryUseCase(categoryId)
             _state.value = _state.value.copy(
-                itemsList = pagingDataFlow,
+                itemList = pagingDataFlow,
                 isLoading = false,
                 error = null
             )

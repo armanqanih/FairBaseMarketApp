@@ -61,7 +61,7 @@ class ExploreViewModel @Inject constructor(
                     is Resource.Success -> {
                         _state.value = _state.value.copy(
                             isLoading = false,
-                            itemsList = result.data ?: emptyList(),
+                            itemList = result.data ?: emptyList(),
                         )
                     }
                     is Resource.Error -> {

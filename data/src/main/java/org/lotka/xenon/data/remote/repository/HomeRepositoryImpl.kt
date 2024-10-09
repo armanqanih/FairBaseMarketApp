@@ -12,14 +12,16 @@ import org.lotka.xenon.domain.repository.HomeRepository
 
 import kotlinx.coroutines.tasks.await
 import org.lotka.xenon.data.remote.pagination.GetItemByCategoryPagingSource
-import org.lotka.xenon.domain.model.Items
+import org.lotka.xenon.domain.model.Item
 
 
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 import org.lotka.xenon.data.remote.dao.CategoryDao
 import org.lotka.xenon.data.remote.dao.ItemsDao
 import org.lotka.xenon.data.remote.dao.entity.toCategory
+
 import org.lotka.xenon.data.remote.dao.entity.toCategoryEntity
 import org.lotka.xenon.data.remote.dao.entity.toItems
 import org.lotka.xenon.data.remote.dao.entity.toItemsEntity
@@ -30,7 +32,7 @@ import javax.inject.Inject
 class HomeRepositoryImpl @Inject constructor(
     private val realtimeDatabase: FirebaseDatabase,
     private val categoryDao: CategoryDao,
-    private val itemsDao: ItemsDao
+    private val itemsDao: ItemsDao,
 ) : HomeRepository {
 
     override fun getCategories(): Flow<Resource<List<Category>>> = flow {
@@ -66,29 +68,29 @@ class HomeRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getHomeItem(): Flow<Resource<List<Items>>> = flow {
+    override fun getHomeItem(): Flow<Resource<List<Item>>> = flow {
         val cachedItems = itemsDao.getAllItems().first()
         if (cachedItems.isNotEmpty()) {
             emit(Resource.Success(cachedItems.map { it.toItems() }))
         } else {
             try {
                 emit(Resource.Loading(true))
-                val itemsList = mutableListOf<Items>()
+                val itemList = mutableListOf<Item>()
 
                 val itemsReference = realtimeDatabase.getReference("Items")
                 val snapshot = itemsReference.get().await()
 
                 snapshot.children.forEach { dataSnapshot ->
-                    val items = dataSnapshot.getValue(Items::class.java)
-                    if (items != null) {
-                        itemsList.add(items)
+                    val item = dataSnapshot.getValue(Item::class.java)
+                    if (item != null) {
+                        itemList.add(item)
                     }
                 }
 
                 // Save fetched items to Room
-                itemsDao.saveHomeItems(itemsList.map { it.toItemsEntity() })
+                itemsDao.saveHomeItems(itemList.map { it.toItemsEntity() })
 
-                emit(Resource.Success(itemsList))
+                emit(Resource.Success(itemList))
                 emit(Resource.Loading(false))
 
             } catch (e: Exception) {
@@ -97,7 +99,7 @@ class HomeRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getDetailItem(itemId: String): Flow<Resource<Items>> = flow {
+    override fun getDetailItem(itemId: String): Flow<Resource<Item>> = flow {
         // Emit loading state
         emit(Resource.Loading(true))
 
@@ -111,7 +113,7 @@ class HomeRepositoryImpl @Inject constructor(
                 val itemReference = realtimeDatabase.getReference("Items/$itemId")
                 val snapshot = itemReference.get().await()
 
-                val item = snapshot.getValue(Items::class.java)
+                val item = snapshot.getValue(Item::class.java)
                 if (item != null) {
                     itemsDao.saveDetailItem(item.toItemsEntity())
                     emit(Resource.Success(item))
@@ -127,10 +129,27 @@ class HomeRepositoryImpl @Inject constructor(
     }
 
 
-    override fun getItemsByCategory(categoryId: String): Flow<PagingData<Items>> {
+    override fun getItemsByCategory(categoryId: String): Flow<PagingData<Item>> {
         return Pager(
             config = PagingConfig(pageSize = 20, enablePlaceholders = false),
             pagingSourceFactory = { GetItemByCategoryPagingSource(realtimeDatabase, categoryId) }
         ).flow
     }
+
+    override suspend fun saveItemToCart(item: Item) {
+        itemsDao.saveItemToCart(item.toItemsEntity())
+    }
+
+    override fun getItemsToCard(): Flow<List<Item>> {
+        return itemsDao.getItemToCard().map { itemsEntityList ->
+            itemsEntityList.map { entity ->
+                entity.toItems() // Convert each ItemsEntity to Items
+            }
+        }
+    }
+
+    override suspend fun removeItemFromCart(itemId: String) {
+        itemsDao.removeItemFromCart(itemId)
+    }
+
 }

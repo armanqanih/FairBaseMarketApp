@@ -13,6 +13,7 @@ package org.lotka.xenon.di
    import org.lotka.xenon.data.remote.dao.AppDatabase
    import org.lotka.xenon.data.remote.dao.CategoryDao
    import org.lotka.xenon.data.remote.dao.ItemsDao
+   import org.lotka.xenon.data.remote.dao.MIGRATION_1_2
 
 
    import org.lotka.xenon.domain.repository.HomeRepository
@@ -34,7 +35,8 @@ package org.lotka.xenon.di
                     appContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).build()
+                ).addMigrations(MIGRATION_1_2)
+                    .build()
             }
 
             @Provides

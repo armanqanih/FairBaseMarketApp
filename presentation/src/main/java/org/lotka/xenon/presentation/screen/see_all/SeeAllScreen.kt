@@ -37,7 +37,7 @@ fun SeeAllScreen(
 ) {
 
     val state = viewModel.state.collectAsState().value
-    val itemList = state.itemsList.collectAsLazyPagingItems()
+    val itemList = state.itemList.collectAsLazyPagingItems()
 
     var title = ""
 
@@ -74,7 +74,7 @@ fun SeeAllScreen(
             verticalArrangement = Arrangement.spacedBy(SpaceMedium.dp)
         ) {
             items(itemList.itemCount) { index ->
-                itemList[index]?.let { SeeAllItem(items = it) }
+                itemList[index]?.let { SeeAllItem(item = it) }
             }
 
         }

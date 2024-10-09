@@ -7,14 +7,14 @@ import com.google.firebase.database.FirebaseDatabase
 
 
 import kotlinx.coroutines.tasks.await
-import org.lotka.xenon.domain.model.Items
+import org.lotka.xenon.domain.model.Item
 
 class GetItemByCategoryPagingSource(
     private val realtimeDatabase: FirebaseDatabase,
     private val categoryId: String
-) : PagingSource<Int, Items>() {
+) : PagingSource<Int, Item>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Items> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Item> {
         return try {
             // Determine the current page (use 1 as the default)
             val currentPage = params.key ?: 1
@@ -31,15 +31,15 @@ class GetItemByCategoryPagingSource(
                 .get().await() // Await the result to get snapshot
 
             // Convert the snapshot into a list of Items
-            val itemsList = snapshot.children.mapNotNull { it.getValue(Items::class.java) }
+            val itemList = snapshot.children.mapNotNull { it.getValue(Item::class.java) }
 
             // Check if more pages are available
-            val nextKey = if (itemsList.size < pageSize) null else currentPage + 1
+            val nextKey = if (itemList.size < pageSize) null else currentPage + 1
             val prevKey = if (currentPage == 1) null else currentPage - 1
 
             // Return the loaded page of data
             LoadResult.Page(
-                data = itemsList,
+                data = itemList,
                 prevKey = prevKey,
                 nextKey = nextKey
             )
@@ -50,7 +50,7 @@ class GetItemByCategoryPagingSource(
     }
 
     // This method tells Paging how to get a refresh key for the next page
-    override fun getRefreshKey(state: PagingState<Int, Items>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, Item>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)

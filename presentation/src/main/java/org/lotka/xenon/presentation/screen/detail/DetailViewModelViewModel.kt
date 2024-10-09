@@ -1,34 +1,69 @@
 package org.lotka.xenon.presentation.screen.detail
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.lotka.xenon.domain.usecase.GetCategoriesUseCase
+import org.lotka.xenon.domain.model.Item
 import org.lotka.xenon.domain.usecase.GetDetailItemUseCase
-import org.lotka.xenon.domain.usecase.GetItemListUseCase
+import org.lotka.xenon.domain.usecase.SaveItemToCartUseCase
 import org.lotka.xenon.domain.util.Resource
+import org.lotka.xenon.presentation.util.UiEvent
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModelViewModel @Inject constructor(
     private val getDetailItemUseCase: GetDetailItemUseCase,
+    private val saveItemToCartUseCase: SaveItemToCartUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DetailState())
     val state = _state.asStateFlow()
 
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
     init {
-        savedStateHandle.get<String>("itemId")?.let { itemId->
-        getDetailItem(itemId)
+        savedStateHandle.get<String>("itemId")?.let { itemId ->
+            getDetailItem(itemId)
         }
     }
 
+    fun onEvent(event: DetailEvent) {
+        when (event) {
+            DetailEvent.BuyNow -> {
+                saveItemToCart(_state.value.item)
+            }
+        }
+    }
 
+    private fun saveItemToCart(item: Item?) {
+        viewModelScope.launch {
+            item?.let {
+
+                try {
+                    saveItemToCartUseCase.invoke(it) // Save the item to the cart
+                    _eventFlow.emit(UiEvent.ShowSnakeBar("Added to Cart List Successfully"))
+                    Log.d("DetailViewModel", "Item saved: ${it.title}")
+                } catch (e: Exception) {
+                    Log.e("DetailViewModel", "Error saving item to cart: ${e.message}")
+                    _eventFlow.emit(UiEvent.ShowSnakeBar("Error adding to Cart List"))
+
+                }
+            } ?: run {
+                Log.e("DetailViewModel", "Item is null, cannot save to cart.")
+                _eventFlow.emit(UiEvent.ShowSnakeBar("Item not found"))
+            }
+        }
+
+    }
 
     fun getDetailItem(itemId: String) {
         viewModelScope.launch {
@@ -53,4 +88,4 @@ class DetailViewModelViewModel @Inject constructor(
             }
         }
     }
-}
+ }

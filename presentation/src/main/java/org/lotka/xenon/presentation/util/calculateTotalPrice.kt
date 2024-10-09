@@ -1,4 +1,4 @@
-package org.lotka.xenon.presentation.screen.my_card.compose
+package org.lotka.xenon.presentation.util
 
 fun calculateTotalPrice(prices: List<Double>, quantities: List<Int>): Double {
   var total = 0.0

@@ -10,5 +10,6 @@ data class Item(
     val rating: Double? = null,
     val showRecommended: Boolean? = null,
     val title: String? = null,
-    val isInCart: Boolean = true
+    val isInCart: Boolean = true,
+    val isOptionRevealed: Boolean = false
 )

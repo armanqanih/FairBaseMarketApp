@@ -3,13 +3,17 @@ package org.lotka.xenon.presentation.screen.my_card
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -18,9 +22,11 @@ import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.domain.util.Constants.SpaceSmall
 import org.lotka.xenon.presentation.compose.StandardButton
 import org.lotka.xenon.presentation.compose.StandardTopBar
+import org.lotka.xenon.presentation.screen.my_card.compose.ActionIcon
 import org.lotka.xenon.presentation.screen.my_card.compose.MyOrderCard
 import org.lotka.xenon.presentation.screen.my_card.compose.PaymentMethod
 import org.lotka.xenon.presentation.screen.my_card.compose.PricesTextRow
+import org.lotka.xenon.presentation.screen.my_card.compose.SwipeableItemWithActions
 
 import org.lotka.xenon.presentation.util.calculateTotalPrice
 import org.lotka.xenon.presentation.util.formatPrice
@@ -31,7 +37,7 @@ fun MyCardScreen(
     onNavigateUp: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
-    val items = state.items
+    val items = state.items.toMutableList()
 
     val deliveryPrice = 10.0
     val itemCount = items.size
@@ -102,34 +108,57 @@ fun MyCardScreen(
                         Spacer(modifier = Modifier.height(SpaceSmall.dp))
                     }
 
-                    items(items) { item ->
-                        val itemIndex = items.indexOf(item)
-                        if (itemIndex >= 0) {
-                            val toolTotalPrice =
-                                formatPrice((item.price ?: 0.0) * quantities[itemIndex])
-                            MyOrderCard(
-                                nameOfTool = item.title.toString(),
-                                toolPrice = item.price?.let { formatPrice(it) },
-                                toolTotalPrice = toolTotalPrice,
-                                quantityText = quantities[itemIndex].toString(),
-                                onPlusButtonClick = {
-                                    quantities[itemIndex] += 1
-                                    totalPrice = calculateTotalPrice(
-                                        items.map { it.price ?: 0.0 },
-                                        quantities
-                                    ) + deliveryPrice
-                                },
-                                onMinusButtonClick = {
-                                    if (quantities[itemIndex] > 1) {
-                                        quantities[itemIndex] -= 1
+                    itemsIndexed(items) { index, item ->
+                        SwipeableItemWithActions(
+                            isRevealed = item.isOptionRevealed,
+                            onExpanded = {
+                                items[index] = item.copy(isOptionRevealed = true)
+                            },
+                            onCollapsed = {
+                                items[index] = item.copy(isOptionRevealed = false)
+                            },
+                            actions = {
+                                ActionIcon(
+                                    onClick = {
+
+                                    },
+                                    backgroundColor = Color.Red,
+                                    icon = Icons.Default.Delete,
+                                    modifier = Modifier.fillMaxHeight()
+                                )
+
+
+                            },
+                        ) {
+
+                            val itemIndex = items.indexOf(item)
+                            if (itemIndex >= 0) {
+                                val toolTotalPrice =
+                                    formatPrice((item.price ?: 0.0) * quantities[itemIndex])
+                                MyOrderCard(
+                                    nameOfTool = item.title.toString(),
+                                    toolPrice = item.price?.let { formatPrice(it) },
+                                    toolTotalPrice = toolTotalPrice,
+                                    quantityText = quantities[itemIndex].toString(),
+                                    onPlusButtonClick = {
+                                        quantities[itemIndex] += 1
                                         totalPrice = calculateTotalPrice(
                                             items.map { it.price ?: 0.0 },
                                             quantities
                                         ) + deliveryPrice
-                                    }
-                                },
-                                toolImage = item.picUrl?.firstOrNull()
-                            )
+                                    },
+                                    onMinusButtonClick = {
+                                        if (quantities[itemIndex] > 1) {
+                                            quantities[itemIndex] -= 1
+                                            totalPrice = calculateTotalPrice(
+                                                items.map { it.price ?: 0.0 },
+                                                quantities
+                                            ) + deliveryPrice
+                                        }
+                                    },
+                                    toolImage = item.picUrl?.firstOrNull()
+                                )
+                            }
                         }
                     }
 
@@ -188,35 +217,57 @@ fun MyCardScreen(
                 item {
                     Spacer(modifier = Modifier.height(SpaceSmall.dp))
                 }
-                items(items) { item ->
-                    val itemIndex = items.indexOf(item)
+                itemsIndexed(items) { index, item ->
+                    SwipeableItemWithActions(
+                        isRevealed = item.isOptionRevealed,
+                        onExpanded = {
+                            items[index] = item.copy(isOptionRevealed = true)
+                        },
+                        onCollapsed = {
+                            items[index] = item.copy(isOptionRevealed = false)
+                        },
+                        actions = {
+                            ActionIcon(
+                                onClick = {
 
-                    if (itemIndex >= 0) {
-                        val toolTotalPrice =
-                            formatPrice((item.price ?: 0.0) * quantities[itemIndex])
-                        MyOrderCard(
-                            nameOfTool = item.title.toString(),
-                            toolPrice = item.price?.let { formatPrice(it) },
-                            toolTotalPrice = toolTotalPrice,
-                            quantityText = quantities[itemIndex].toString(),
-                            onPlusButtonClick = {
-                                quantities[itemIndex] += 1
-                                totalPrice = calculateTotalPrice(
-                                    items.map { it.price ?: 0.0 },
-                                    quantities
-                                ) + deliveryPrice
-                            },
-                            onMinusButtonClick = {
-                                if (quantities[itemIndex] > 1) {
-                                    quantities[itemIndex] -= 1
+                                },
+                                backgroundColor = Color.Red,
+                                icon = Icons.Default.Delete,
+                                modifier = Modifier.fillMaxHeight()
+                            )
+
+
+                        },
+                    ) {
+                        val itemIndex = items.indexOf(item)
+
+                        if (itemIndex >= 0) {
+                            val toolTotalPrice =
+                                formatPrice((item.price ?: 0.0) * quantities[itemIndex])
+                            MyOrderCard(
+                                nameOfTool = item.title.toString(),
+                                toolPrice = item.price?.let { formatPrice(it) },
+                                toolTotalPrice = toolTotalPrice,
+                                quantityText = quantities[itemIndex].toString(),
+                                onPlusButtonClick = {
+                                    quantities[itemIndex] += 1
                                     totalPrice = calculateTotalPrice(
                                         items.map { it.price ?: 0.0 },
                                         quantities
                                     ) + deliveryPrice
-                                }
-                            },
-                            toolImage = item.picUrl?.firstOrNull()
-                        )
+                                },
+                                onMinusButtonClick = {
+                                    if (quantities[itemIndex] > 1) {
+                                        quantities[itemIndex] -= 1
+                                        totalPrice = calculateTotalPrice(
+                                            items.map { it.price ?: 0.0 },
+                                            quantities
+                                        ) + deliveryPrice
+                                    }
+                                },
+                                toolImage = item.picUrl?.firstOrNull()
+                            )
+                        }
                     }
                 }
 

@@ -34,7 +34,7 @@ fun WishListScreen(
     onNavigateUp:()->Unit={}
 ){
    val state by wishListViewModel.state.collectAsState()
-    val itemList = state.items
+    val itemList = state.wishListItem
 
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -64,7 +64,7 @@ fun WishListScreen(
                     toolImage = item.picUrl.toString(),
                     nameOfTool = item.title.toString(),
                     toolPrice = item.price?.let { formatPrice(it) },
-//                    rating = item.rating.toString()
+                     rating = item.rating.toString()
                 )
             }
         }

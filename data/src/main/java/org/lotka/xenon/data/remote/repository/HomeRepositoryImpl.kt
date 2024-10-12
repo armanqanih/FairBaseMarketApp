@@ -171,14 +171,12 @@ class HomeRepositoryImpl @Inject constructor(
     }
 
     override fun getItemsInWishList(): Flow<List<WishListModel>> {
-        return flow {
-            itemsDao.getItemsInWishList().map { itemsEntityList ->
-                itemsEntityList.map { entity ->
-                    entity.toWishListModel()
-                }
+        return itemsDao.getItemsInWishList().map { itemsEntityList ->
+            itemsEntityList.map { entity ->
+                entity.toWishListModel() // Mapping from Entity to Model
             }
         }
-
     }
+
 }
 

@@ -171,7 +171,9 @@ fun ExploreScreen(
                                 item = item,
                                 isFavorite = item.isFavorite,
                                 onFavoriteButtonClick = {
-                                    viewModel.onEvent(ExploreEvent.onFavoreateIconClick, item.toWishListModel())
+                                    item.isFavorite = !item.isFavorite
+
+                                    viewModel.toggleFavorite(item.toWishListModel())
 
                                 }
                             )

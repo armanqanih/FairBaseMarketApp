@@ -48,6 +48,7 @@ interface ItemsDao {
     @Query("SELECT * FROM wishlist_table")
     fun getItemsInWishList(): Flow<List<WishListEntity>>
 
+
     @Query("DELETE FROM wishlist_table WHERE categoryId = :itemId")
     suspend fun removeItemFromWishList(itemId: String)
 

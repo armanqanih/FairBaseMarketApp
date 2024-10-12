@@ -14,14 +14,15 @@ data class WishListEntity(
     val rating: Double? = null
 )
 
-fun WishListEntity.toWishListModel()= WishListModel(
-    categoryId = categoryId,
-    title = title,
-    price = price,
-    picUrl = picUrl,
-    rating = rating
-
-)
+fun WishListEntity.toWishListModel(): WishListModel {
+    return WishListModel(
+        categoryId = this.categoryId,
+        title = this.title,
+        price = this.price,
+        picUrl = this.picUrl,
+        rating = this.rating
+    )
+}
 
 fun WishListModel.toWishListEntity()= WishListEntity(
     categoryId = categoryId,

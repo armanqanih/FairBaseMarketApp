@@ -50,7 +50,7 @@ fun Recommendation(
     modifier: Modifier = Modifier,
     onNavigateToDetail:(String)->Unit= {},
     item: Item,
-    isFavorite: Boolean? = false,
+    isFavorite: Boolean,
     onFavoriteButtonClick: ()-> Unit= {},
 ) {
     Column(
@@ -94,7 +94,7 @@ fun Recommendation(
                 },
                 modifier = Modifier.align(Alignment.TopEnd)
             ) {
-                if (isFavorite == true){
+                if (isFavorite){
                     Icon(
                         imageVector = Icons.Default.Favorite ,
                         contentDescription = null,

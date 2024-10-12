@@ -5,6 +5,6 @@ import org.lotka.xenon.domain.model.Item
 
 data class MyCardState(
 
-   val items: List<Item> = emptyList(),
+
    val itemCardList: List<CardModel> = emptyList()
 )

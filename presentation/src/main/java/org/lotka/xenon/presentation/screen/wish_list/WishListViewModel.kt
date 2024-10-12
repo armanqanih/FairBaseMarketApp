@@ -1,6 +1,7 @@
 package org.lotka.xenon.presentation.screen.wish_list
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.lotka.xenon.domain.model.WishListModel
 
 import org.lotka.xenon.domain.usecase.card.RemoveItemFromCartUseCase
 import org.lotka.xenon.domain.usecase.wish_list.GetItemsInWishListUseCase
@@ -20,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WishListViewModel @Inject constructor(
     private val getItemInWishList: GetItemsInWishListUseCase,
-    private val removeItemFromCartUseCase: RemoveItemFromWishListUseCase
+    private val removeItemFromWishListUseCase: RemoveItemFromWishListUseCase
 ):ViewModel() {
 
     private val _state = MutableStateFlow(WishListState())
@@ -30,23 +32,38 @@ class WishListViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        getCardItem()
+        getWishListItems()
     }
 
-    fun getCardItem() {
+    private fun getWishListItems() {
         viewModelScope.launch {
             getItemInWishList.invoke().collect { itemsList ->
-                _state.value = _state.value.copy(
-                    items = itemsList
-                )
+                val mappedItems = itemsList.map { item ->
+                    WishListModel(
+                        categoryId = item.categoryId,
+                        title = item.title,
+                        picUrl = item.picUrl,
+                        rating = item.rating,
+                        price = item.price
+                    )
+                }
+                _state.value = _state.value.copy(wishListItem = mappedItems)
+                Log.d("WishListViewModel", "Fetched items: $mappedItems")
             }
         }
     }
 
 
-    fun removeItemInCard(itemId: String) {
+
+
+    fun removeItemFromWishList(itemId: String) {
         viewModelScope.launch {
-            removeItemFromCartUseCase.invoke(itemId)
+            try {
+                removeItemFromWishListUseCase.invoke(itemId)
+                Log.d("WishListViewModel", "Item removed from wishlist: $itemId")
+            } catch (e: Exception) {
+                Log.e("WishListViewModel", "Error removing item from wishlist: ${e.message}")
+            }
         }
     }
 }

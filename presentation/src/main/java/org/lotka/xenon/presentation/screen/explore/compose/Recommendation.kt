@@ -90,6 +90,7 @@ fun Recommendation(
             )
             IconButton(
                 onClick = {
+
                     onFavoriteButtonClick()
                 },
                 modifier = Modifier.align(Alignment.TopEnd)

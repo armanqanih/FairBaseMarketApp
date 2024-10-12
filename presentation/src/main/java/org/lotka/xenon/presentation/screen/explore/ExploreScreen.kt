@@ -49,6 +49,7 @@ fun ExploreScreen(
     onNavigateToDetail:(String)-> Unit = {}
 ){
     val state = viewModel.state.collectAsState().value
+    val isFavorite = state.isFavorite
 
     val scaffoldState = rememberScaffoldState()
     LaunchedEffect(key1 = true) {
@@ -169,12 +170,9 @@ fun ExploreScreen(
                                 modifier = Modifier.weight(1f),
                                 onNavigateToDetail = onNavigateToDetail,
                                 item = item,
-                                isFavorite = item.isFavorite,
+                                isFavorite = state.itemWishList.any { it.categoryId == item.categoryId.toString() } ,
                                 onFavoriteButtonClick = {
-                                    item.isFavorite = !item.isFavorite
-
-                                    viewModel.toggleFavorite(item.toWishListModel())
-
+                                    viewModel.onEvent(ExploreEvent.onFavoreateIconClick, item.toWishListModel())
                                 }
                             )
                         }

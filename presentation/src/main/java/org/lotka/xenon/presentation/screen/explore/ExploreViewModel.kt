@@ -23,7 +23,7 @@ class ExploreViewModel @Inject constructor(
     private val getCategoriesUseCase: GetCategoriesUseCase,
     private val getHomeItemListUseCase: GetHomeItemListUseCase,
     private val saveItemToWishListUseCase: SaveItemToWishListUseCase,
-    private val removeItemFromCartUseCase: RemoveItemFromWishListUseCase,
+    private val removeItemFromWishListUseCase: RemoveItemFromWishListUseCase,
 ) : ViewModel() {
 
 
@@ -54,22 +54,21 @@ class ExploreViewModel @Inject constructor(
     fun toggleFavorite(item: WishListModel) {
         viewModelScope.launch {
             try {
-                val updatedItem = item.copy(isFavorite = !item.isFavorite)
-
-                if (updatedItem.isFavorite) {
+                val isInWishlist = _state.value.itemWishList.any { it.categoryId == item.categoryId }
+                val updatedItem = item.copy(isFavorite = !isInWishlist)
+                if (!isInWishlist) {
                     saveItemToWishList(updatedItem)
                     Log.d("WishList", "Item saved: ${updatedItem.title}")
                 } else {
-                    removeItemFromWishList(item.categoryId.toString())
+                    removeItemFromWishList(updatedItem.categoryId)
                     Log.d("WishList", "Item removed: ${updatedItem.title}")
                 }
 
-                // Update UI state
                 val updatedWishList = _state.value.itemWishList.toMutableList().apply {
                     val index = indexOfFirst { it.categoryId == item.categoryId }
                     if (index != -1) {
-                        set(index, updatedItem)
-                    } else if (updatedItem.isFavorite) {
+                        removeAt(index)
+                    } else {
                         add(updatedItem)
                     }
                 }
@@ -83,27 +82,18 @@ class ExploreViewModel @Inject constructor(
 
 
 
-
-
     private fun saveItemToWishList(item: WishListModel) {
         viewModelScope.launch {
-            try {
                 saveItemToWishListUseCase.invoke(item)
-            } catch (e: Exception) {
-                Log.e("ExploreViewModel", "Error saving item to wishlist: ${e.message}")
-            }
         }
     }
 
-    private fun removeItemFromWishList(itemId: String) {
+    fun removeItemFromWishList(itemId:String){
         viewModelScope.launch {
-            try {
-                removeItemFromCartUseCase.invoke(itemId)
-            } catch (e: Exception) {
-                Log.e("ExploreViewModel", "Error removing item from wishlist: ${e.message}")
-            }
+            removeItemFromWishListUseCase.invoke(itemId)
         }
     }
+
 
     private fun getCategories() {
         viewModelScope.launch {

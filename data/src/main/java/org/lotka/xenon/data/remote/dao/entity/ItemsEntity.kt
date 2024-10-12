@@ -9,13 +9,14 @@ import org.lotka.xenon.domain.model.Item
 data class ItemsEntity(
     @PrimaryKey val categoryId: Int? = null,
     val description: String? = null,
-    val model: List<String>? = null, // List<String> that needs conversion
-    val picUrl: List<String>? = null, // List<String> that needs conversion
+    val model: List<String>? = null,
+    val picUrl: List<String>? = null,
     val price: Double? = null,
     val rating: Double? = null,
     val showRecommended: Boolean? = null,
     val title: String? = null,
-    val isInCart: Boolean = true
+    val isInCart: Boolean = false,
+    val isInWishList: Boolean = false
 )
 
 
@@ -28,7 +29,8 @@ fun ItemsEntity.toItems() = Item(
     rating = rating,
     showRecommended = showRecommended,
     title = title,
-    isInCart = isInCart
+    isInCart = isInCart,
+    isInWishList = isInWishList
 )
 
 fun Item.toItemsEntity() = ItemsEntity(
@@ -40,5 +42,6 @@ fun Item.toItemsEntity() = ItemsEntity(
     rating = rating,
     showRecommended = showRecommended,
     title = title,
-    isInCart = isInCart
+    isInCart = isInCart,
+    isInWishList = isInWishList
 )

@@ -20,11 +20,18 @@ import kotlinx.coroutines.flow.map
 
 import org.lotka.xenon.data.remote.dao.CategoryDao
 import org.lotka.xenon.data.remote.dao.ItemsDao
+import org.lotka.xenon.data.remote.dao.entity.toCardModel
+import org.lotka.xenon.data.remote.dao.entity.toCartEntity
 import org.lotka.xenon.data.remote.dao.entity.toCategory
+
 
 import org.lotka.xenon.data.remote.dao.entity.toCategoryEntity
 import org.lotka.xenon.data.remote.dao.entity.toItems
 import org.lotka.xenon.data.remote.dao.entity.toItemsEntity
+import org.lotka.xenon.data.remote.dao.entity.toWishListEntity
+import org.lotka.xenon.data.remote.dao.entity.toWishListModel
+import org.lotka.xenon.domain.model.CardModel
+import org.lotka.xenon.domain.model.WishListModel
 import org.lotka.xenon.domain.util.Resource
 import javax.inject.Inject
 
@@ -136,20 +143,42 @@ class HomeRepositoryImpl @Inject constructor(
         ).flow
     }
 
-    override suspend fun saveItemToCart(item: Item) {
-        itemsDao.saveItemToCart(item.toItemsEntity())
+//    for CardScreen
+
+    override suspend fun saveItemToCart(item: CardModel) {
+        itemsDao.saveItemToCart(item.toCartEntity())
     }
 
-    override fun getItemsToCard(): Flow<List<Item>> {
-        return itemsDao.getItemToCard().map { itemsEntityList ->
-            itemsEntityList.map { entity ->
-                entity.toItems() // Convert each ItemsEntity to Items
-            }
+
+    override fun getItemsInCart(): Flow<List<CardModel>> {
+        return itemsDao.getItemsInCart().map { itemsEntityList ->
+            itemsEntityList.map { entity -> entity.toCardModel() }
         }
     }
+
 
     override suspend fun removeItemFromCart(itemId: String) {
         itemsDao.removeItemFromCart(itemId)
     }
 
+    //    forWishList
+    override suspend fun saveItemToWishList(item: WishListModel) {
+        itemsDao.saveItemToWishList(item.toWishListEntity())
+    }
+
+    override suspend fun removeItemFromWishList(itemId: String) {
+        itemsDao.removeItemFromWishList(itemId)
+    }
+
+    override fun getItemsInWishList(): Flow<List<WishListModel>> {
+        return flow {
+            itemsDao.getItemsInWishList().map { itemsEntityList ->
+                itemsEntityList.map { entity ->
+                    entity.toWishListModel()
+                }
+            }
+        }
+
+    }
 }
+

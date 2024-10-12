@@ -1,4 +1,4 @@
-package org.lotka.xenon.presentation.screen.my_card.compose
+package org.lotka.xenon.presentation.screen.wish_list.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -35,15 +38,11 @@ import org.lotka.xenon.domain.util.Constants.SpaceToLarge
 import org.lotka.xenon.presentation.R
 
 @Composable
-fun MyOrderCard(
+fun WishListCard(
     toolImage:String? = "",
     nameOfTool:String="",
     toolPrice:String? ="",
-    toolTotalPrice:String="",
-    onPlusButtonClick:()-> Unit = {},
-    onMinusButtonClick:()-> Unit = {},
-    quantityText:String="",
-
+    rating:String?=""
 ) {
 
     Row(
@@ -56,8 +55,8 @@ fun MyOrderCard(
             Card(
                 modifier = Modifier
                     .clip(RoundedCornerShape(SpaceSmall))
-                    .height(100.dp)
-                    .width(100.dp),
+                    .height(80.dp)
+                    .width(80.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colors.onBackground
                 )
@@ -95,79 +94,36 @@ fun MyOrderCard(
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "${toolPrice}",
+                        text = "$${toolPrice}",
                         style = MaterialTheme.typography.body1,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colors.primary,
                         fontWeight = FontWeight.SemiBold
                     )
+                    Row {
+                        Icon(imageVector = Icons.Default.Star,
+                            contentDescription = "Star" ,
+                            tint = MaterialTheme.colors.secondary
+                            )
+
+                        Text(
+                            text = "${rating}",
+                            style = MaterialTheme.typography.body1,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = MaterialTheme.colors.onSurface,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+
+
                 }
-                // Total price text that updates with quantity
-                Text(
-                    text = "$${toolTotalPrice}",
-                    style = MaterialTheme.typography.h2,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = MaterialTheme.colors.onSurface,
-                    fontWeight = FontWeight.SemiBold
-                )
+
+
             }
         }
 
-        // Quantity controls (minus and plus buttons)
-        Row(
-            modifier = Modifier
-                .weight(2f)
-                .padding(top = 58.dp)
-                .clip(RoundedCornerShape(SpaceSmall.dp))
-                .background(MaterialTheme.colors.onBackground),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            // Minus button
-            TextButton(onClick = {
-              onMinusButtonClick()
-            },
-                modifier = Modifier
-                    .padding(start = 2.dp, top = 2.dp, bottom = 2.dp)
-                    .clip(RoundedCornerShape(SpaceToLarge))
-                    .weight(0.5f)
-                    .height(SpaceToLarge.dp)
-                    .background(MaterialTheme.colors.background)
-            ) {
-                Text(
-                    text = "-",
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.onSurface
-                )
-            }
 
-            // Display quantity
-            Text(
-                text = "$quantityText",
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.onSurface,
-                modifier = Modifier.padding(start = 12.dp, end = 12.dp)
-            )
-
-            // Plus button
-            TextButton(onClick = {
-               onPlusButtonClick()
-            },
-                modifier = Modifier
-                    .padding(start = 2.dp, top = 2.dp, bottom = 2.dp)
-                    .clip(RoundedCornerShape(SpaceToLarge))
-                    .weight(0.5f)
-                    .height(SpaceToLarge.dp)
-                    .background(MaterialTheme.colors.primary)
-            ) {
-                Text(
-                    text = "+",
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.onBackground
-                )
-            }
-        }
     }
 }

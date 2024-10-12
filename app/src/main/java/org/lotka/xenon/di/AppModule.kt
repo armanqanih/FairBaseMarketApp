@@ -3,6 +3,7 @@ package org.lotka.xenon.di
    import HomeRepositoryImpl
    import android.content.Context
    import androidx.room.Room
+
    import com.google.firebase.database.FirebaseDatabase
    import com.google.firebase.firestore.FirebaseFirestore
     import dagger.Module
@@ -11,13 +12,17 @@ package org.lotka.xenon.di
    import dagger.hilt.android.qualifiers.ApplicationContext
    import dagger.hilt.components.SingletonComponent
    import org.lotka.xenon.data.remote.dao.AppDatabase
+
+   import org.lotka.xenon.data.remote.dao.AppDatabase.Companion.MIGRATION_2_3
+
    import org.lotka.xenon.data.remote.dao.CategoryDao
    import org.lotka.xenon.data.remote.dao.ItemsDao
-   import org.lotka.xenon.data.remote.dao.MIGRATION_1_2
+
 
 
    import org.lotka.xenon.domain.repository.HomeRepository
-    import javax.inject.Singleton
+
+   import javax.inject.Singleton
 
     @Module
     @InstallIn(SingletonComponent::class)
@@ -35,7 +40,8 @@ package org.lotka.xenon.di
                     appContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).addMigrations(MIGRATION_1_2)
+                ).addMigrations(MIGRATION_2_3)
+                    .fallbackToDestructiveMigration()
                     .build()
             }
 

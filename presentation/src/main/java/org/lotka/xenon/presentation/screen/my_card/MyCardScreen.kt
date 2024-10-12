@@ -37,10 +37,10 @@ fun MyCardScreen(
     onNavigateUp: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
-    val items = state.items.toMutableList()
+    val items = state.itemCardList.toMutableList()
+    val itemCount = items.size
 
     val deliveryPrice = 10.0
-    val itemCount = items.size
 
     // Recalculate quantities only when cartItems change
     val quantities = remember(items) { mutableStateListOf(*Array(itemCount) { 1 }) }
@@ -85,7 +85,7 @@ fun MyCardScreen(
 
         }
     ) {
-        if (itemCount <= 0) {
+        if (itemCount == 0) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -96,117 +96,113 @@ fun MyCardScreen(
                     color = MaterialTheme.colors.onSurface,
                 )
             }
-        } else if (itemCount <= 3) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(it), // Make LazyColumn take up available space
-                    verticalArrangement = Arrangement.spacedBy(SpaceMedium.dp)
-                ) {
-                    item {
-                        Spacer(modifier = Modifier.height(SpaceSmall.dp))
-                    }
+         } else if (itemCount <= 3) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it), // Use padding for LazyColumn to avoid overlap
+                verticalArrangement = Arrangement.spacedBy(SpaceMedium.dp)
+            ) {
+                item {
+                    Spacer(modifier = Modifier.height(SpaceSmall.dp))
+                }
 
-                    itemsIndexed(items) { index, item ->
-                        SwipeableItemWithActions(
-                            isRevealed = item.isOptionRevealed,
-                            onExpanded = {
-                                items[index] = item.copy(isOptionRevealed = true)
-                            },
-                            onCollapsed = {
-                                items[index] = item.copy(isOptionRevealed = false)
-                            },
-                            actions = {
-                                ActionIcon(
-                                    onClick = {
+                itemsIndexed(items) { index, item ->
+                    SwipeableItemWithActions(
+                        isRevealed = item.isOptionRevealed,
+                        onExpanded = {
+                            items[index] = item.copy(isOptionRevealed = true)
+                        },
+                        onCollapsed = {
+                            items[index] = item.copy(isOptionRevealed = false)
+                        },
+                        actions = {
+                            ActionIcon(
+                                onClick = {
+                                    viewModel.removeItemInCard(item.categoryId.toString())
+                                },
+                                backgroundColor = Color.Red,
+                                icon = Icons.Default.Delete,
+                                modifier = Modifier.fillMaxHeight()
+                            )
+                        },
+                    ) {
 
-                                    },
-                                    backgroundColor = Color.Red,
-                                    icon = Icons.Default.Delete,
-                                    modifier = Modifier.fillMaxHeight()
-                                )
-
-
-                            },
-                        ) {
-
-                            val itemIndex = items.indexOf(item)
-                            if (itemIndex >= 0) {
-                                val toolTotalPrice =
-                                    formatPrice((item.price ?: 0.0) * quantities[itemIndex])
-                                MyOrderCard(
-                                    nameOfTool = item.title.toString(),
-                                    toolPrice = item.price?.let { formatPrice(it) },
-                                    toolTotalPrice = toolTotalPrice,
-                                    quantityText = quantities[itemIndex].toString(),
-                                    onPlusButtonClick = {
-                                        quantities[itemIndex] += 1
+                        val itemIndex = items.indexOf(item)
+                        if (itemIndex >= 0) {
+                            val toolTotalPrice =
+                                formatPrice((item.price ?: 0.0) * quantities[itemIndex])
+                            MyOrderCard(
+                                nameOfTool = item.title.toString(),
+                                toolPrice = item.price?.let { formatPrice(it) },
+                                toolTotalPrice = toolTotalPrice,
+                                quantityText = quantities[itemIndex].toString(),
+                                onPlusButtonClick = {
+                                    quantities[itemIndex] += 1
+                                    totalPrice = calculateTotalPrice(
+                                        items.map { it.price ?: 0.0 },
+                                        quantities
+                                    ) + deliveryPrice
+                                },
+                                onMinusButtonClick = {
+                                    if (quantities[itemIndex] > 1) {
+                                        quantities[itemIndex] -= 1
                                         totalPrice = calculateTotalPrice(
                                             items.map { it.price ?: 0.0 },
                                             quantities
                                         ) + deliveryPrice
-                                    },
-                                    onMinusButtonClick = {
-                                        if (quantities[itemIndex] > 1) {
-                                            quantities[itemIndex] -= 1
-                                            totalPrice = calculateTotalPrice(
-                                                items.map { it.price ?: 0.0 },
-                                                quantities
-                                            ) + deliveryPrice
-                                        }
-                                    },
-                                    toolImage = item.picUrl?.firstOrNull()
-                                )
-                            }
+                                    }
+                                },
+                                toolImage = item.picUrl
+                            )
                         }
                     }
-
-                    item {
-                        PricesTextRow(
-                            title = "SubTotal",
-                            price = "$${
-                                formatPrice(
-                                    calculateTotalPrice(
-                                        items.map { it.price ?: 0.0 },
-                                        quantities
-                                    )
-                                )
-                            }"
-                        )
-                        PricesTextRow(
-                            title = "Delivery",
-                            price = "$${formatPrice(deliveryPrice)}"
-                        )
-
-                        Spacer(modifier = Modifier.height(SpaceSmall.dp))
-                        Divider(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MaterialTheme.colors.onBackground
-                        )
-                        Spacer(modifier = Modifier.height(SpaceSmall.dp))
-
-                        PricesTextRow(
-                            title = "Total",
-                            price = "$${formatPrice(totalPrice)}"
-                        )
-
-                        Spacer(modifier = Modifier.height(SpaceSmall.dp))
-                        PaymentMethod()
-                        Spacer(modifier = Modifier.height(SpaceSmall.dp))
-                        StandardButton(
-                            modifier = Modifier.padding(bottom = SpaceSmall.dp),
-                            title = "Check Out",
-                            onButtonClick = {}
-                        )
-                    }
                 }
-
-
             }
 
+            // This column will be aligned at the bottom of the screen
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)  // Align the checkout section at the bottom
+                    .padding(bottom = SpaceSmall.dp)
+            ) {
+                PricesTextRow(
+                    title = "SubTotal",
+                    price = "$${formatPrice(calculateTotalPrice(items.map { it.price ?: 0.0 }, quantities))}"
+                )
+                PricesTextRow(
+                    title = "Delivery",
+                    price = "$${formatPrice(deliveryPrice)}"
+                )
 
-        } else if (itemCount >= 4) {
+                Spacer(modifier = Modifier.height(SpaceSmall.dp))
+                Divider(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colors.onBackground
+                )
+                Spacer(modifier = Modifier.height(SpaceSmall.dp))
+
+                PricesTextRow(
+                    title = "Total",
+                    price = "$${formatPrice(totalPrice)}"
+                )
+
+                Spacer(modifier = Modifier.height(SpaceSmall.dp))
+                PaymentMethod()
+                Spacer(modifier = Modifier.height(SpaceSmall.dp))
+                StandardButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "Check Out",
+                    onButtonClick = {}
+                )
+            }
+        }
+
+
+
+        } else {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -229,7 +225,7 @@ fun MyCardScreen(
                         actions = {
                             ActionIcon(
                                 onClick = {
-
+                                    viewModel.removeItemInCard(item.categoryId.toString())
                                 },
                                 backgroundColor = Color.Red,
                                 icon = Icons.Default.Delete,
@@ -265,7 +261,7 @@ fun MyCardScreen(
                                         ) + deliveryPrice
                                     }
                                 },
-                                toolImage = item.picUrl?.firstOrNull()
+                                toolImage = item.picUrl
                             )
                         }
                     }

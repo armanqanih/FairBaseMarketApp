@@ -21,12 +21,14 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 import androidx.compose.ui.text.font.FontWeight
@@ -37,6 +39,7 @@ import coil.request.ImageRequest
 import coil.size.Scale
 import coil.size.Size
 import org.lotka.xenon.domain.model.Item
+import org.lotka.xenon.domain.model.WishListModel
 import org.lotka.xenon.domain.util.Constants.SpaceLarge
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
@@ -44,9 +47,11 @@ import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 
 @Composable
 fun Recommendation(
-    onNavigateToDetail:(String)->Unit ={},
+    modifier: Modifier = Modifier,
+    onNavigateToDetail:(String)->Unit= {},
     item: Item,
-    modifier: Modifier = Modifier
+    isFavorite: Boolean? = false,
+    onFavoriteButtonClick: ()-> Unit= {},
 ) {
     Column(
         modifier = modifier
@@ -84,14 +89,26 @@ fun Recommendation(
                     .clip(RoundedCornerShape(SpaceLarge.dp))
             )
             IconButton(
-                onClick = {  },
+                onClick = {
+                    onFavoriteButtonClick()
+                },
                 modifier = Modifier.align(Alignment.TopEnd)
             ) {
-                Icon(
-                    imageVector = Icons.Default.FavoriteBorder,
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.surface
-                )
+                if (isFavorite == true){
+                    Icon(
+                        imageVector = Icons.Default.Favorite ,
+                        contentDescription = null,
+                        tint = Color.Red
+                    )
+                }else{
+                    Icon(
+                        imageVector = Icons.Default.FavoriteBorder ,
+                        contentDescription = null,
+                        tint = MaterialTheme.colors.surface
+                    )
+
+                }
+
             }
         }
 

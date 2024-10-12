@@ -1,5 +1,6 @@
 package org.lotka.xenon.presentation.screen.explore
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,20 +23,23 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.NotificationsNone
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import org.lotka.xenon.domain.model.toWishListModel
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.presentation.compose.StandardHeaderText
 import org.lotka.xenon.presentation.compose.StandardTopBar
 import org.lotka.xenon.presentation.screen.explore.compose.Categories
 import org.lotka.xenon.presentation.screen.explore.compose.HeaderSection
 import org.lotka.xenon.presentation.screen.explore.compose.Recommendation
-
+import org.lotka.xenon.presentation.util.UiEvent
 
 
 @Composable
@@ -44,7 +48,28 @@ fun ExploreScreen(
     onNavigateToSeeAll:(String)-> Unit = {},
     onNavigateToDetail:(String)-> Unit = {}
 ){
-   val state = viewModel.state.collectAsState().value
+    val state = viewModel.state.collectAsState().value
+
+    val scaffoldState = rememberScaffoldState()
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is UiEvent.ShowSnakeBar -> {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = event.message
+                    )
+                }
+                UiEvent.onNavigateUp -> {
+
+                }
+            }
+        }
+    }
+
+
+
+
+
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
             StandardTopBar(
@@ -64,13 +89,12 @@ fun ExploreScreen(
                     }
                 },
                 actions = {
-                 IconButton(onClick = { /*TODO*/ },
-                     modifier = Modifier
-                         .clip(shape = CircleShape)
-                         .background(
-                             MaterialTheme.colors.onBackground
-                         )
+                 IconButton(onClick = {
 
+                 },
+                          modifier = Modifier
+                         .clip(shape = CircleShape)
+                         .background(MaterialTheme.colors.onBackground)
                      ) {
                      Icon(imageVector = Icons.Default.NotificationsNone,
                          contentDescription ="",
@@ -80,7 +104,7 @@ fun ExploreScreen(
                     Spacer(modifier = Modifier.width(SpaceMedium.dp))
                     
                     IconButton(onClick = {  },
-                            modifier = Modifier
+                                 modifier = Modifier
                                 .clip(shape = CircleShape)
                                 .background(
                                     MaterialTheme.colors.onBackground
@@ -142,8 +166,15 @@ fun ExploreScreen(
 
                         for (item in rowItems) {
                             Recommendation(
+                                modifier = Modifier.weight(1f),
                                 onNavigateToDetail = onNavigateToDetail,
-                                item, Modifier.weight(1f))
+                                item = item,
+                                isFavorite = item.isFavorite,
+                                onFavoriteButtonClick = {
+                                    viewModel.onEvent(ExploreEvent.onFavoreateIconClick, item.toWishListModel())
+
+                                }
+                            )
                         }
 
 

@@ -1,4 +1,4 @@
-package org.lotka.xenon.domain.usecase
+package org.lotka.xenon.domain.usecase.explorer
 
 import kotlinx.coroutines.flow.Flow
 import org.lotka.xenon.domain.model.Category

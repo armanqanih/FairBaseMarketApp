@@ -1,46 +1,61 @@
 package org.lotka.xenon.data.remote.dao
 
+import android.content.Context
 import androidx.room.Database
+import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import org.lotka.xenon.data.remote.converters.Converters
+import org.lotka.xenon.data.remote.dao.entity.CartEntity
 import org.lotka.xenon.data.remote.dao.entity.CategoryEntity
 import org.lotka.xenon.data.remote.dao.entity.ItemsEntity
+import org.lotka.xenon.data.remote.dao.entity.WishListEntity
 
 @Database(
-    entities = [CategoryEntity::class, ItemsEntity::class],
-    version = 1,
+    entities = [CategoryEntity::class, ItemsEntity::class, WishListEntity::class, CartEntity::class],
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun itemsDao(): ItemsDao
-}
 
-val MIGRATION_1_2 = object : Migration(1, 2) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        // Create the new table
-        database.execSQL("""
-            CREATE TABLE new_items_table (
-                id INTEGER PRIMARY KEY NOT NULL,
-                name TEXT,
-                price REAL
+    companion object {
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Create cart_table if it doesn't exist
+                database.execSQL(
+                    """
+            CREATE TABLE IF NOT EXISTS `cart_table` (
+                `categoryId` TEXT NOT NULL PRIMARY KEY,
+                `title` TEXT NOT NULL,
+                `price` REAL NOT NULL,
+                `picUrl` TEXT NOT NULL,
+                `rating` REAL
             )
-        """.trimIndent())
+        """.trimIndent()
+                )
 
-        // Copy the data from the old table to the new table
-        database.execSQL("""
-            INSERT INTO new_items_table (id, name)
-            SELECT id, name FROM items_table
-        """)
+                // Create wishlist_table if it doesn't exist
+                database.execSQL(
+                    """
+            CREATE TABLE IF NOT EXISTS `wishlist_table` (
+                `categoryId` TEXT NOT NULL PRIMARY KEY,
+                `title` TEXT NOT NULL,
+                `price` REAL NOT NULL,
+                `picUrl` TEXT NOT NULL,
+                `rating` REAL
+            )
+        """.trimIndent()
+                )
+            }
+        }
 
-        // Remove the old table
-        database.execSQL("DROP TABLE items_table")
 
-        // Rename the new table to the old table's name
-        database.execSQL("ALTER TABLE new_items_table RENAME TO items_table")
     }
+
+
 }

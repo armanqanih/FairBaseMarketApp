@@ -1,3 +1,6 @@
+import android.os.Build
+import androidx.annotation.RequiresApi
+
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -7,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 import kotlinx.coroutines.flow.flow
 import org.lotka.xenon.domain.model.Category
-import org.lotka.xenon.domain.repository.HomeRepository
+import org.lotka.xenon.domain.repository.ExploreRepository
 
 
 import kotlinx.coroutines.tasks.await
@@ -18,33 +21,34 @@ import org.lotka.xenon.domain.model.Item
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-import org.lotka.xenon.data.remote.dao.CategoryDao
-import org.lotka.xenon.data.remote.dao.ItemsDao
-import org.lotka.xenon.data.remote.dao.entity.toCardModel
-import org.lotka.xenon.data.remote.dao.entity.toCartEntity
-import org.lotka.xenon.data.remote.dao.entity.toCategory
+import org.lotka.xenon.data.remote.dao.local.CategoryDao
+import org.lotka.xenon.data.remote.dao.local.ItemsDao
+import org.lotka.xenon.data.remote.dao.local.database.ItemDatabase
+import org.lotka.xenon.data.remote.dao.local.entity.toCardModel
+import org.lotka.xenon.data.remote.dao.local.entity.toCartEntity
+import org.lotka.xenon.data.remote.dao.local.entity.toCategory
 
 
-import org.lotka.xenon.data.remote.dao.entity.toCategoryEntity
-import org.lotka.xenon.data.remote.dao.entity.toItems
-import org.lotka.xenon.data.remote.dao.entity.toItemsEntity
-import org.lotka.xenon.data.remote.dao.entity.toWishListEntity
-import org.lotka.xenon.data.remote.dao.entity.toWishListModel
+import org.lotka.xenon.data.remote.dao.local.entity.toCategoryEntity
+import org.lotka.xenon.data.remote.dao.local.entity.toItems
+import org.lotka.xenon.data.remote.dao.local.entity.toItemsEntity
+import org.lotka.xenon.data.remote.dao.local.entity.toWishListEntity
+import org.lotka.xenon.data.remote.dao.local.entity.toWishListModel
+
 import org.lotka.xenon.domain.model.CardModel
 import org.lotka.xenon.domain.model.WishListModel
 import org.lotka.xenon.domain.util.Resource
 import javax.inject.Inject
 
 
-class HomeRepositoryImpl @Inject constructor(
+class ExploreRepositoryImpl @Inject constructor(
     private val realtimeDatabase: FirebaseDatabase,
-    private val categoryDao: CategoryDao,
-    private val itemsDao: ItemsDao,
-) : HomeRepository {
+    private val db: ItemDatabase,
+    ) : ExploreRepository {
 
     override fun getCategories(): Flow<Resource<List<Category>>> = flow {
         // First check if categories are available in Room
-        val cachedCategories = categoryDao.getAllCategories().first()
+        val cachedCategories = db.categoryDao().getAllCategories().first()
         if (cachedCategories.isNotEmpty()) {
             emit(Resource.Success(cachedCategories.map { it.toCategory() }))
         } else {
@@ -64,7 +68,7 @@ class HomeRepositoryImpl @Inject constructor(
                 }
 
                 // Save to Room after fetching
-                categoryDao.saveCategories(categories.map { it.toCategoryEntity() })
+                db.categoryDao().saveCategories(categories.map { it.toCategoryEntity() })
 
                 emit(Resource.Success(categories))
                 emit(Resource.Loading(false))
@@ -76,7 +80,8 @@ class HomeRepositoryImpl @Inject constructor(
     }
 
     override fun getHomeItem(): Flow<Resource<List<Item>>> = flow {
-        val cachedItems = itemsDao.getAllItems().first()
+        val cachedItems = db
+            .itemsDao().getAllItems().first()
         if (cachedItems.isNotEmpty()) {
             emit(Resource.Success(cachedItems.map { it.toItems() }))
         } else {
@@ -95,7 +100,7 @@ class HomeRepositoryImpl @Inject constructor(
                 }
 
                 // Save fetched items to Room
-                itemsDao.saveHomeItems(itemList.map { it.toItemsEntity() })
+                db.itemsDao().saveHomeItems(itemList.map { it.toItemsEntity() })
 
                 emit(Resource.Success(itemList))
                 emit(Resource.Loading(false))
@@ -112,7 +117,7 @@ class HomeRepositoryImpl @Inject constructor(
 
         try {
             // Check if the item exists in Room first
-            val cachedItem = itemsDao.getItemById(itemId)
+            val cachedItem = db.itemsDao().getItemById(itemId)
             if (cachedItem != null) {
                 emit(Resource.Success(cachedItem.toItems()))
             } else {
@@ -122,7 +127,7 @@ class HomeRepositoryImpl @Inject constructor(
 
                 val item = snapshot.getValue(Item::class.java)
                 if (item != null) {
-                    itemsDao.saveDetailItem(item.toItemsEntity())
+                    db.itemsDao().saveDetailItem(item.toItemsEntity())
                     emit(Resource.Success(item))
                 } else {
                     emit(Resource.Error("Item not found in Firebase"))
@@ -143,40 +148,45 @@ class HomeRepositoryImpl @Inject constructor(
         ).flow
     }
 
-//    for CardScreen
-
-    override suspend fun saveItemToCart(item: CardModel) {
-        itemsDao.saveItemToCart(item.toCartEntity())
-    }
 
 
-    override fun getItemsInCart(): Flow<List<CardModel>> {
-        return itemsDao.getItemsInCart().map { itemsEntityList ->
-            itemsEntityList.map { entity -> entity.toCardModel() }
-        }
-    }
+    override fun searchItems(query: String): Flow<Resource<List<Item>>> = flow{
+        try {
+            emit(Resource.Loading(true))
+                // Search in Firebase
+                val searchResults = mutableListOf<Item>()
+                val itemsReference = realtimeDatabase.getReference("Items")
+                val snapshot = itemsReference.get().await()
+                snapshot.children.forEach { dataSnapshot ->
+                    val item = dataSnapshot.getValue(Item::class.java)
+                    if (item != null && item.title?.contains(query, ignoreCase = true) == true) {
+                        searchResults.add(item)
+                    }
+                }
+                // If results are found, emit success and save to Room for future use
+                if (searchResults.isNotEmpty()) {
+                    db.itemsDao().saveHomeItems(searchResults.map { it.toItemsEntity() })
+                    emit(Resource.Success(searchResults))
+                } else {
+                    emit(Resource.Error("No items found"))
+                }
 
+                // Search in Room if offline
+                val cachedItems = db.itemsDao().searchItemsInRoom("%$query%").first()
+                if (cachedItems.isNotEmpty()) {
+                    emit(Resource.Success(cachedItems.map { it.toItems() }))
+                } else {
+                    emit(Resource.Error("No items found locally"))
 
-    override suspend fun removeItemFromCart(itemId: String) {
-        itemsDao.removeItemFromCart(itemId)
-    }
-
-    //    forWishList
-    override suspend fun saveItemToWishList(item: WishListModel) {
-        itemsDao.saveItemToWishList(item.toWishListEntity())
-    }
-
-    override suspend fun removeItemFromWishList(itemId: String) {
-        itemsDao.removeItemFromWishList(itemId)
-    }
-
-    override fun getItemsInWishList(): Flow<List<WishListModel>> {
-        return itemsDao.getItemsInWishList().map { itemsEntityList ->
-            itemsEntityList.map { entity ->
-                entity.toWishListModel() // Mapping from Entity to Model
             }
+        } catch (e: Exception) {
+            emit(Resource.Error("Failed to search items: ${e.message}"))
+        } finally {
+            emit(Resource.Loading(false))
         }
     }
+
+
 
 }
 

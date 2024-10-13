@@ -1,10 +1,11 @@
-package org.lotka.xenon.data.remote.dao.entity
+package org.lotka.xenon.data.remote.dao.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import org.lotka.xenon.data.util.Constants.CATEGORY_TABLE
 import org.lotka.xenon.domain.model.Category
 
-@Entity(tableName = "category_table")
+@Entity(tableName = CATEGORY_TABLE)
 data class CategoryEntity(
     @PrimaryKey val id: Int? = null,
     val picUrl: String? = null,

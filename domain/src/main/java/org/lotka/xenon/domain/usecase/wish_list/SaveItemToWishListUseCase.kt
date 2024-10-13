@@ -1,14 +1,14 @@
 package org.lotka.xenon.domain.usecase.wish_list
 
-import org.lotka.xenon.domain.model.Item
 import org.lotka.xenon.domain.model.WishListModel
-import org.lotka.xenon.domain.repository.HomeRepository
+import org.lotka.xenon.domain.repository.ExploreRepository
+import org.lotka.xenon.domain.repository.WishListRepository
 import javax.inject.Inject
 
 class SaveItemToWishListUseCase @Inject constructor(
-    private val itemsRepository: HomeRepository
+    private val wishListRepository: WishListRepository
 ) {
     suspend operator fun invoke(item: WishListModel) {
-        itemsRepository.saveItemToWishList(item)
+        wishListRepository.saveItemToWishList(item)
     }
 }

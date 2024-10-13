@@ -58,10 +58,12 @@ class ExploreViewModel @Inject constructor(
                 val updatedItem = item.copy(isFavorite = !isInWishlist)
                 if (!isInWishlist) {
                     saveItemToWishList(updatedItem)
-                    Log.d("WishList", "Item saved: ${updatedItem.title}")
+
+//                    Log.d("WishList", "Item saved: ${updatedItem.title}")
                 } else {
                     removeItemFromWishList(updatedItem.categoryId)
-                    Log.d("WishList", "Item removed: ${updatedItem.title}")
+//
+//                    Log.d("WishList", "Item removed: ${updatedItem.title}")
                 }
 
                 val updatedWishList = _state.value.itemWishList.toMutableList().apply {

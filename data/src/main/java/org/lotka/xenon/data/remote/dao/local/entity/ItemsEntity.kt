@@ -1,11 +1,12 @@
-package org.lotka.xenon.data.remote.dao.entity
+package org.lotka.xenon.data.remote.dao.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import org.lotka.xenon.data.util.Constants.ITEM_TABLE
 import org.lotka.xenon.domain.model.Item
 
 
-@Entity(tableName = "items_table")
+@Entity(tableName = ITEM_TABLE)
 data class ItemsEntity(
     @PrimaryKey val categoryId: Int? = null,
     val description: String? = null,
@@ -15,8 +16,7 @@ data class ItemsEntity(
     val rating: Double? = null,
     val showRecommended: Boolean? = null,
     val title: String? = null,
-    val isInCart: Boolean = false,
-    val isInWishList: Boolean = false
+
 )
 
 
@@ -29,8 +29,7 @@ fun ItemsEntity.toItems() = Item(
     rating = rating,
     showRecommended = showRecommended,
     title = title,
-    isInCart = isInCart,
-    isInWishList = isInWishList
+
 )
 
 fun Item.toItemsEntity() = ItemsEntity(
@@ -42,6 +41,5 @@ fun Item.toItemsEntity() = ItemsEntity(
     rating = rating,
     showRecommended = showRecommended,
     title = title,
-    isInCart = isInCart,
-    isInWishList = isInWishList
+
 )

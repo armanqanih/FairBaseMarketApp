@@ -1,12 +1,13 @@
 package org.lotka.xenon.domain.usecase.wish_list
 
-import org.lotka.xenon.domain.repository.HomeRepository
+import org.lotka.xenon.domain.repository.ExploreRepository
+import org.lotka.xenon.domain.repository.WishListRepository
 import javax.inject.Inject
 
 class RemoveItemFromWishListUseCase @Inject constructor(
-    private val itemsRepository: HomeRepository
+    private val wishListRepository: WishListRepository
 ) {
     suspend operator fun invoke(itemId: String) {
-        itemsRepository.removeItemFromWishList(itemId)
+        wishListRepository.removeItemFromWishList(itemId)
     }
 }

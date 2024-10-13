@@ -2,14 +2,14 @@ package org.lotka.xenon.domain.usecase.card
 
 import kotlinx.coroutines.flow.Flow
 import org.lotka.xenon.domain.model.CardModel
-import org.lotka.xenon.domain.model.Item
-import org.lotka.xenon.domain.repository.HomeRepository
+import org.lotka.xenon.domain.repository.CardRepository
+import org.lotka.xenon.domain.repository.ExploreRepository
 import javax.inject.Inject
 
 class GetItemsInCartUseCase @Inject constructor(
-    private val itemsRepository: HomeRepository
+    private val cardRepository: CardRepository
 ) {
       operator fun invoke(): Flow<List<CardModel>> {
-        return itemsRepository.getItemsInCart()
+        return cardRepository.getItemsInCart()
     }
 }

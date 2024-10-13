@@ -170,7 +170,8 @@ fun ExploreScreen(
                                 modifier = Modifier.weight(1f),
                                 onNavigateToDetail = onNavigateToDetail,
                                 item = item,
-                                isFavorite = state.itemWishList.any { it.categoryId == item.categoryId.toString() } ,
+                                isFavorite = state.itemWishList.any {itemWishList->
+                                    itemWishList.categoryId == item.categoryId.toString() } ,
                                 onFavoriteButtonClick = {
                                     viewModel.onEvent(ExploreEvent.onFavoreateIconClick, item.toWishListModel())
                                 }

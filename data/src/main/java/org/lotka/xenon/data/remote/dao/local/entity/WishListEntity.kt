@@ -1,11 +1,12 @@
-package org.lotka.xenon.data.remote.dao.entity
+package org.lotka.xenon.data.remote.dao.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import org.lotka.xenon.data.util.Constants.WISHLIST_TABLE
 import org.lotka.xenon.domain.model.CardModel
 import org.lotka.xenon.domain.model.WishListModel
 
-@Entity(tableName = "wishlist_table")
+@Entity(tableName = WISHLIST_TABLE)
 data class WishListEntity(
     @PrimaryKey val categoryId: String,
     val title: String,

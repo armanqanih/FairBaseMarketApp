@@ -1,10 +1,11 @@
-package org.lotka.xenon.data.remote.dao.entity
+package org.lotka.xenon.data.remote.dao.local.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import org.lotka.xenon.data.util.Constants.CARD_TABLE
 import org.lotka.xenon.domain.model.CardModel
 
-@Entity(tableName = "cart_table")
+@Entity(tableName = CARD_TABLE)
 data class CartEntity(
     @PrimaryKey val categoryId: String,
     val title: String,

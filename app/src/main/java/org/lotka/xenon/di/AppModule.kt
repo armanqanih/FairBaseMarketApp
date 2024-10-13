@@ -1,10 +1,12 @@
 package org.lotka.xenon.di
 
+import android.content.Context
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.lotka.xenon.data.remote.dao.local.database.ItemDatabase
 
@@ -20,6 +22,12 @@ object AppModule {
 
 
     @Provides
+    @Singleton
+    fun provideApplicationContext(@ApplicationContext context: Context): Context {
+        return context
+    }
+
+    @Provides
     fun provideCategoryDao(database: ItemDatabase): CategoryDao = database.categoryDao()
 
     @Provides
@@ -31,7 +39,6 @@ object AppModule {
     fun provideFirebaseDatabase(): FirebaseDatabase {
         return FirebaseDatabase.getInstance()
     }
-
 
     @Provides
     @Singleton

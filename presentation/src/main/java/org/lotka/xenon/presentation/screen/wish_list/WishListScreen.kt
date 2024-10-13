@@ -61,7 +61,7 @@ fun WishListScreen(
             items(itemList){item->
                 Spacer(modifier = Modifier.height(SpaceMedium.dp))
                 WishListCard(
-                    toolImage = item.picUrl.toString(),
+                    toolImage = item.picUrl,
                     nameOfTool = item.title.toString(),
                     toolPrice = item.price?.let { formatPrice(it) },
                      rating = item.rating.toString()

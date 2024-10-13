@@ -12,6 +12,7 @@ sealed class ScreensNavigation(val route: String) {
     object MyOrderScreen : ScreensNavigation(route = "order_screen")
     object Profile : ScreensNavigation(route = "profile")
     object WishList : ScreensNavigation(route = "wish_list")
+    object SearchScreen : ScreensNavigation(route = "search_screen")
 
 
 

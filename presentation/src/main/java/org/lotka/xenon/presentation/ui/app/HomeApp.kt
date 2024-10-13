@@ -20,6 +20,7 @@ import org.lotka.xenon.presentation.screen.explore.ExploreScreen
 import org.lotka.xenon.presentation.screen.see_all.SeeAllScreen
 import org.lotka.xenon.presentation.screen.my_card.MyCardScreen
 import org.lotka.xenon.presentation.screen.profile.ProfileScreen
+import org.lotka.xenon.presentation.screen.search.SearchScreen
 import org.lotka.xenon.presentation.screen.wish_list.WishListScreen
 
 
@@ -57,7 +58,8 @@ fun HomeApp(
                 ) {
                     ExploreScreen(
                         onNavigateToDetail = navController::navigate,
-                        onNavigateToSeeAll = navController::navigate
+                        onNavigateToSeeAll = navController::navigate,
+                        onNavigateToSearch = navController::navigate,
                     )
 
 
@@ -66,6 +68,15 @@ fun HomeApp(
                     route = ScreensNavigation.MyOrderScreen.route,
                 ) {
                     MyOrderScreen(onNavigateUp = navController::navigateUp)
+
+                }
+           composable(
+                    route = ScreensNavigation.SearchScreen.route,
+                ) {
+                    SearchScreen(
+                        onNavigateUp = navController::navigateUp,
+                        onNavigateToDetail = navController::navigate
+                        )
 
                 }
 

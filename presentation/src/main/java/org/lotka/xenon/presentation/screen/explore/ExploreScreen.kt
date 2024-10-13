@@ -39,6 +39,7 @@ import org.lotka.xenon.presentation.compose.StandardTopBar
 import org.lotka.xenon.presentation.screen.explore.compose.Categories
 import org.lotka.xenon.presentation.screen.explore.compose.HeaderSection
 import org.lotka.xenon.presentation.screen.explore.compose.Recommendation
+import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 import org.lotka.xenon.presentation.util.UiEvent
 
 
@@ -46,7 +47,8 @@ import org.lotka.xenon.presentation.util.UiEvent
 fun ExploreScreen(
     viewModel: ExploreViewModel = hiltViewModel(),
     onNavigateToSeeAll:(String)-> Unit = {},
-    onNavigateToDetail:(String)-> Unit = {}
+    onNavigateToDetail:(String)-> Unit = {},
+    onNavigateToSearch:(String)-> Unit = {}
 ){
     val state = viewModel.state.collectAsState().value
     val isFavorite = state.isFavorite
@@ -104,7 +106,8 @@ fun ExploreScreen(
                  }
                     Spacer(modifier = Modifier.width(SpaceMedium.dp))
                     
-                    IconButton(onClick = {  },
+                    IconButton(onClick = {
+                        onNavigateToSearch(ScreensNavigation.SearchScreen.route) },
                                  modifier = Modifier
                                 .clip(shape = CircleShape)
                                 .background(

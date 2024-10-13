@@ -1,6 +1,7 @@
 package org.lotka.xenon.di
 
 import ExploreRepositoryImpl
+import android.content.Context
 import com.google.firebase.database.FirebaseDatabase
 import dagger.Module
 import dagger.Provides
@@ -27,9 +28,9 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideExploreRepository(
-        realtimeDatabase: FirebaseDatabase, db:ItemDatabase,
+        realtimeDatabase: FirebaseDatabase, db:ItemDatabase,context:Context
     ): ExploreRepository {
-        return ExploreRepositoryImpl(realtimeDatabase, db)
+        return ExploreRepositoryImpl(realtimeDatabase, db,context)
     }
 
     @Provides

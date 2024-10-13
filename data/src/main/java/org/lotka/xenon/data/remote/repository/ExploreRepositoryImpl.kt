@@ -6,6 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.core.Context
 import kotlinx.coroutines.flow.Flow
 
 import kotlinx.coroutines.flow.flow
@@ -24,8 +25,7 @@ import kotlinx.coroutines.flow.map
 import org.lotka.xenon.data.remote.dao.local.CategoryDao
 import org.lotka.xenon.data.remote.dao.local.ItemsDao
 import org.lotka.xenon.data.remote.dao.local.database.ItemDatabase
-import org.lotka.xenon.data.remote.dao.local.entity.toCardModel
-import org.lotka.xenon.data.remote.dao.local.entity.toCartEntity
+
 import org.lotka.xenon.data.remote.dao.local.entity.toCategory
 
 
@@ -34,6 +34,7 @@ import org.lotka.xenon.data.remote.dao.local.entity.toItems
 import org.lotka.xenon.data.remote.dao.local.entity.toItemsEntity
 import org.lotka.xenon.data.remote.dao.local.entity.toWishListEntity
 import org.lotka.xenon.data.remote.dao.local.entity.toWishListModel
+import org.lotka.xenon.data.util.IsNetworkAvailable
 
 import org.lotka.xenon.domain.model.CardModel
 import org.lotka.xenon.domain.model.WishListModel
@@ -44,6 +45,7 @@ import javax.inject.Inject
 class ExploreRepositoryImpl @Inject constructor(
     private val realtimeDatabase: FirebaseDatabase,
     private val db: ItemDatabase,
+    private val context: android.content.Context
     ) : ExploreRepository {
 
     override fun getCategories(): Flow<Resource<List<Category>>> = flow {
@@ -67,11 +69,12 @@ class ExploreRepositoryImpl @Inject constructor(
                     }
                 }
 
+
                 // Save to Room after fetching
                 db.categoryDao().saveCategories(categories.map { it.toCategoryEntity() })
 
-                emit(Resource.Success(categories))
                 emit(Resource.Loading(false))
+                emit(Resource.Success(categories))
 
             } catch (e: Exception) {
                 emit(Resource.Error("Failed to fetch categories: ${e.message}"))
@@ -150,34 +153,40 @@ class ExploreRepositoryImpl @Inject constructor(
 
 
 
-    override fun searchItems(query: String): Flow<Resource<List<Item>>> = flow{
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun searchItems(query: String): Flow<Resource<List<Item>>> = flow {
         try {
             emit(Resource.Loading(true))
-                // Search in Firebase
+
+            val isConnected = IsNetworkAvailable(context = context)
+            if (isConnected) {
+                // Fetch data from Firebase
                 val searchResults = mutableListOf<Item>()
                 val itemsReference = realtimeDatabase.getReference("Items")
                 val snapshot = itemsReference.get().await()
+
                 snapshot.children.forEach { dataSnapshot ->
                     val item = dataSnapshot.getValue(Item::class.java)
                     if (item != null && item.title?.contains(query, ignoreCase = true) == true) {
                         searchResults.add(item)
                     }
                 }
-                // If results are found, emit success and save to Room for future use
+
                 if (searchResults.isNotEmpty()) {
+                    // Save results to Room and emit success
                     db.itemsDao().saveHomeItems(searchResults.map { it.toItemsEntity() })
                     emit(Resource.Success(searchResults))
                 } else {
                     emit(Resource.Error("No items found"))
                 }
-
-                // Search in Room if offline
+            } else {
+                // Offline search in Room
                 val cachedItems = db.itemsDao().searchItemsInRoom("%$query%").first()
                 if (cachedItems.isNotEmpty()) {
                     emit(Resource.Success(cachedItems.map { it.toItems() }))
                 } else {
                     emit(Resource.Error("No items found locally"))
-
+                }
             }
         } catch (e: Exception) {
             emit(Resource.Error("Failed to search items: ${e.message}"))

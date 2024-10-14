@@ -17,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 
@@ -27,11 +28,15 @@ fun StandardTopBar(
     showArrowBackIosNew: Boolean = false,
     showTopBarMenu: Boolean = false,
     showArrowBack: Boolean = false,
+    arrowBackColor:Color= MaterialTheme.colors.onSurface,
+    backgroundColor:Color=MaterialTheme.colors.background,
     title: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {}
 ) {
 
     TopAppBar(
+        backgroundColor = backgroundColor ,
+        contentColor = MaterialTheme.colors.background ,
         modifier = modifier.fillMaxWidth(),
         title = title,
         navigationIcon = when {
@@ -60,7 +65,7 @@ fun StandardTopBar(
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "ArrowBack",
-                            tint = MaterialTheme.colors.onSurface,
+                            tint = arrowBackColor,
                         )
                     }
                 }
@@ -80,8 +85,6 @@ fun StandardTopBar(
             else -> null // No navigation icon if none are requested
         },
         actions = actions,
-        backgroundColor = MaterialTheme.colors.background,
-        contentColor = MaterialTheme.colors.background,
         elevation = 0.dp
     )
 }

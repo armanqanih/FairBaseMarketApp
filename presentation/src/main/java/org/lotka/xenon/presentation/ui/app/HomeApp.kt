@@ -19,12 +19,13 @@ import org.lotka.xenon.presentation.screen.detail.DetailScreen
 import org.lotka.xenon.presentation.screen.explore.ExploreScreen
 import org.lotka.xenon.presentation.screen.see_all.SeeAllScreen
 import org.lotka.xenon.presentation.screen.my_card.MyCardScreen
-import org.lotka.xenon.presentation.screen.profile.ProfileScreen
+
 import org.lotka.xenon.presentation.screen.search.SearchScreen
 import org.lotka.xenon.presentation.screen.wish_list.WishListScreen
 
 
 import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
+import org.lotka.xenon.presentation.screen.profile.ProfileScreen
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -51,7 +52,7 @@ fun HomeApp(
         content = { _ ->
             NavHost(
                 navController = navController,
-                startDestination = ScreensNavigation.ExploreScreen.route,
+                startDestination = ScreensNavigation.Profile.route,
             ) {
                 composable(
                     route = ScreensNavigation.ExploreScreen.route,
@@ -90,7 +91,9 @@ fun HomeApp(
                 composable(
                     route = ScreensNavigation.Profile.route,
                 ) {
-                    ProfileScreen( )
+                    ProfileScreen(
+
+                    )
 
                 }
 
@@ -106,20 +109,17 @@ fun HomeApp(
                         selectedCatgory = it.arguments?.getString("categoryId") ?: "1",
                         onNavigateUp = navController::navigateUp
                     )
-
-
                 }
+
                 composable(
                     route = ScreensNavigation.DetailScreen.route + "/{itemId}",
                     arguments = listOf(navArgument("itemId")
                     { type = NavType.StringType })
                 ) {
-                    DetailScreen(
-                        onNavigateUp = navController::navigateUp
-                    )
-
-
+                    DetailScreen(onNavigateUp = navController::navigateUp)
                 }
+
+
                 composable(
                     route = ScreensNavigation.MyCardScreen.route,
                 ) {

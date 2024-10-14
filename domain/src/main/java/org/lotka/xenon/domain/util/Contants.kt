@@ -18,6 +18,7 @@ object Constants {
     val SpaceLarge = 24
     val SpaceToLarge = 30
     val SpaceVeryLarge = 50
+    val SpaceMidumLarge = 40
 
 
     val IconSizeSmall = 15
@@ -25,6 +26,10 @@ object Constants {
     val IconSizeLarge = 35
 
 
+
+    val profilePictureSizeLarge = 125
+    val profilePictureSizeMedium = 75
+    val profilePictureSmallSize = 30
 
 
 

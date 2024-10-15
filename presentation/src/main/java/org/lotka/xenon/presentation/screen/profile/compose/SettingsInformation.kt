@@ -56,7 +56,7 @@ fun SettingsInformation (
    title:String = "",
    onNavigateTo:( )->Unit= {}
 ){
-   Column(modifier = Modifier.fillMaxWidth()) {
+   Column(modifier = Modifier.fillMaxWidth().padding(start = 6.dp)) {
        if (showHeaderName){
            Text(
                text = headerName,
@@ -72,7 +72,7 @@ fun SettingsInformation (
        Spacer(modifier = Modifier.height(SpaceLarge.dp))
 
        Row (modifier = Modifier
-           .fillMaxWidth().padding(start = 8.dp)
+           .fillMaxWidth().padding(start = 10.dp)
            .clickable { onNavigateTo() },
            horizontalArrangement = Arrangement.SpaceBetween,
            verticalAlignment = Alignment.CenterVertically

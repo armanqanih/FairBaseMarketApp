@@ -31,11 +31,12 @@ import org.lotka.xenon.presentation.theme.Gray
 import org.lotka.xenon.presentation.theme.GreenLand
 import org.lotka.xenon.presentation.theme.OrangeColor
 import org.lotka.xenon.presentation.theme.Yellow
+import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 
 
 @Composable
 fun ProfileScreen(
-
+   navigateToEditProfile:(String)->Unit = {}
 ) {
 
     Column(modifier = Modifier.fillMaxSize()
@@ -44,7 +45,11 @@ fun ProfileScreen(
 
         ) {
         Spacer(modifier = Modifier.height(Constants.SpaceLarge.dp))
-        HeaderSection()
+        HeaderSection(onHeaderClick = {
+            navigateToEditProfile(
+                ScreensNavigation.EditProfileScreen.route
+            )
+        })
         Spacer(modifier = Modifier.height(Constants.SpaceLarge.dp))
         SettingsInformation(
             iconBackground = Blue,

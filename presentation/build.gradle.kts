@@ -76,6 +76,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.0")
 
+
+    // Cropper
+    implementation("com.github.yalantis:ucrop:2.2.6")
+
+
     //Splash Api
     implementation ("androidx.core:core-splashscreen:1.0.1")
 

@@ -40,7 +40,7 @@ class HomeActivity : AppCompatActivity() {
                         StandardScaffold(
                             navController = navController,
                             showBottomBar = currentRoute in listOf(
-                                ScreensNavigation.Profile.route,
+                                ScreensNavigation.ProfileScreen.route,
                                 ScreensNavigation.ExploreScreen.route
                             ),
                             modifier = Modifier.fillMaxSize(),

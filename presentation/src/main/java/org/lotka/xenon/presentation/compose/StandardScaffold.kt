@@ -88,7 +88,7 @@ fun StandardScaffold(
         ),
         BottomNavItem(
             title = "Profile",
-            route = ScreensNavigation.Profile.route
+            route = ScreensNavigation.ProfileScreen.route
             ,
             selectedItem = Icons.Rounded.Person,
             unSelectedItem = Icons.Rounded.Person,

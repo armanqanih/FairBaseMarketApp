@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -28,6 +30,7 @@ fun StandardTopBar(
     showArrowBackIosNew: Boolean = false,
     showTopBarMenu: Boolean = false,
     showArrowBack: Boolean = false,
+    showCancelIcon: Boolean = false,
     arrowBackColor:Color= MaterialTheme.colors.onSurface,
     backgroundColor:Color=MaterialTheme.colors.background,
     title: @Composable () -> Unit = {},
@@ -40,6 +43,22 @@ fun StandardTopBar(
         modifier = modifier.fillMaxWidth(),
         title = title,
         navigationIcon = when {
+
+            showCancelIcon -> {
+                {
+                    IconButton(onClick = onNavigateUp,
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(35.dp),
+                            imageVector = Icons.Outlined.Cancel,
+                            contentDescription = "ArrowBack",
+                            tint = MaterialTheme.colors.onSurface,
+                        )
+                    }
+                }
+            }
+
+
             showArrowBackIosNew -> {
                 {
                     IconButton(onClick = onNavigateUp,
@@ -57,6 +76,7 @@ fun StandardTopBar(
                     }
                 }
             }
+
             showArrowBack -> {
                 {
                     IconButton(onClick = onNavigateUp,

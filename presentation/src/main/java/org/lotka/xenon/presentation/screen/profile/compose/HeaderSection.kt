@@ -43,10 +43,12 @@ import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 
 @Composable
 fun HeaderSection (
-
+   onHeaderClick: ()-> Unit ={}
 ){
 
-    Row (modifier = Modifier.fillMaxWidth(),
+    Row (modifier = Modifier.fillMaxWidth()
+        .clickable { onHeaderClick() }
+        ,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
         ){

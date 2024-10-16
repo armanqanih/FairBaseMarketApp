@@ -26,7 +26,7 @@ import org.lotka.xenon.presentation.screen.wish_list.WishListScreen
 
 import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 import org.lotka.xenon.presentation.screen.profile.ProfileScreen
-import org.lotka.xenon.presentation.screen.profile_detail.EditProfileScreen
+import org.lotka.xenon.presentation.screen.edit_profile.EditProfileScreen
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -96,7 +96,11 @@ fun HomeApp(
 
                 }
                 composable(
-                    route = ScreensNavigation.EditProfileScreen.route,
+                    route = ScreensNavigation.EditProfileScreen.route
+//                            + "/{userId}"
+                    ,
+//                    arguments = listOf(navArgument("userId")
+//                    { type = NavType.StringType }),
                 ) {
                     EditProfileScreen(onNavigateUp = navController::navigateUp)
 

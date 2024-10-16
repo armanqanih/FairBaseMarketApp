@@ -15,9 +15,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCartCheckout
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import org.lotka.xenon.domain.util.Constants
 import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.domain.util.Constants.SpaceMidumLarge
@@ -36,18 +38,24 @@ import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 
 @Composable
 fun ProfileScreen(
+    profileViewModel: ProfileViewModel= hiltViewModel(),
    navigateToEditProfile:(String)->Unit = {}
 ) {
-
-    Column(modifier = Modifier.fillMaxSize()
-        .padding(start = SpaceMedium.dp, end =SpaceMedium.dp )
+   val state =  profileViewModel.state.collectAsState().value
+    val user = state.user
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(start = SpaceMedium.dp, end = SpaceMedium.dp)
         ,
 
         ) {
         Spacer(modifier = Modifier.height(Constants.SpaceLarge.dp))
-        HeaderSection(onHeaderClick = {
+        HeaderSection(
+            userProfilePicture = user?.profileImageUrl?:"",
+            userName =user?.username?:"UserName",
+            onHeaderClick = {
             navigateToEditProfile(
-                ScreensNavigation.EditProfileScreen.route
+                ScreensNavigation.EditProfileScreen.route + "/${user?.userId}"
             )
         })
         Spacer(modifier = Modifier.height(Constants.SpaceLarge.dp))

@@ -43,7 +43,9 @@ import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 
 @Composable
 fun HeaderSection (
-   onHeaderClick: ()-> Unit ={}
+    userProfilePicture: String= "",
+    userName: String= "",
+    onHeaderClick: ()-> Unit ={}
 ){
 
     Row (modifier = Modifier.fillMaxWidth()
@@ -71,7 +73,7 @@ fun HeaderSection (
                 Image(
                     painter = rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(R.drawable.pobg)
+                            .data(userProfilePicture)
                             .crossfade(true)
                             .error(android.R.drawable.ic_menu_report_image)
                             .placeholder(android.R.drawable.ic_menu_gallery)
@@ -92,7 +94,7 @@ fun HeaderSection (
 
                 ){
                 Text(
-                    text = "Arman Sherwanii",
+                    text = userName,
                     style = MaterialTheme.typography.body1,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

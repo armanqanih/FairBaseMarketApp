@@ -9,10 +9,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import org.lotka.xenon.data.remote.dao.local.database.CardDatabase
 import org.lotka.xenon.data.remote.dao.local.database.ItemDatabase
+import org.lotka.xenon.data.remote.dao.local.database.ProfileDataBase
 
 import org.lotka.xenon.data.remote.dao.local.database.WishListDatabase
 import org.lotka.xenon.data.util.Constants.CARD_DATABASE
 import org.lotka.xenon.data.util.Constants.ITEM_DATABASE
+import org.lotka.xenon.data.util.Constants.PROFILE_DATABASE
 import org.lotka.xenon.data.util.Constants.WISHLIST_DATABASE
 
 import javax.inject.Singleton
@@ -53,4 +55,17 @@ object DataBaseModule {
         ).fallbackToDestructiveMigration()
             .build()
     }
+
+    @Provides
+    @Singleton
+    fun provideProfileDatabase(@ApplicationContext appContext: Context): ProfileDataBase {
+        return Room.databaseBuilder(
+            appContext,
+            ProfileDataBase::class.java,
+            PROFILE_DATABASE
+        ).fallbackToDestructiveMigration()
+            .build()
+    }
+
+
 }

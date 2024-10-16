@@ -1,4 +1,4 @@
-package org.lotka.xenon.presentation.screen.profile_detail
+package org.lotka.xenon.presentation.screen.edit_profile
 
 import android.net.Uri
 import org.lotka.xenon.presentation.util.PasswordTextFieldState

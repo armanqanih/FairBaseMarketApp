@@ -1,6 +1,8 @@
 package org.lotka.xenon.di
 
 import android.content.Context
+import android.content.SharedPreferences
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -15,6 +17,8 @@ import org.lotka.xenon.data.remote.dao.local.CategoryDao
 import org.lotka.xenon.data.remote.dao.local.ItemsDao
 import org.lotka.xenon.data.remote.dao.local.ProfileDao
 import org.lotka.xenon.data.remote.dao.local.database.ProfileDataBase
+import org.lotka.xenon.data.remote.repository.AuthRepositoryImpl
+import org.lotka.xenon.domain.repository.AuthRepository
 
 
 import javax.inject.Singleton
@@ -22,6 +26,24 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(
+        firebaseAuth: FirebaseAuth
+    ): AuthRepository = AuthRepositoryImpl(firebaseAuth)
+
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences("your_shared_prefs_name", Context.MODE_PRIVATE)
+    }
+
 
     @Provides
     @Singleton

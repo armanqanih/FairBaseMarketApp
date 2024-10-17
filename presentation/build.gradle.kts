@@ -13,7 +13,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        minSdk =  21
+        minSdk =  23
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -208,8 +208,8 @@ dependencies {
 
     //firebase
 
-    implementation("com.google.firebase:firebase-analytics-ktx:21.5.0")
-    implementation("com.google.firebase:firebase-analytics:21.5.0")
+    implementation("com.google.firebase:firebase-analytics-ktx:22.1.2")
+    implementation("com.google.firebase:firebase-analytics:22.1.2")
 
 
 //    implementation ("com.google.firebase:firebase-crashlytics-ktx:18.5.1")

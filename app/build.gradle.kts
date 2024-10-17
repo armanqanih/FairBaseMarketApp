@@ -13,7 +13,7 @@ android {
     compileSdk =  34
     defaultConfig {
         applicationId = "org.lotka.xenon"
-        minSdk =  21
+        minSdk =  23
         targetSdk = 34
         versionCode = 164
         versionName =   "6.0.5"
@@ -241,8 +241,13 @@ dependencies {
 
     //firebase
 
-    implementation ("com.google.firebase:firebase-analytics-ktx:21.5.0")
-    implementation ("com.google.firebase:firebase-analytics:21.5.0")
+    implementation ("com.google.firebase:firebase-analytics-ktx:22.1.2")
+    implementation ("com.google.firebase:firebase-analytics:22.1.2")
+    implementation (platform("com.google.firebase:firebase-bom:32.0.0")) // Use the latest Firebase BOM version
+    implementation ("com.google.firebase:firebase-firestore:25.1.0")
+    implementation ("com.google.firebase:firebase-auth-ktx:23.0.0")
+// Add other Firebase dependencies here
+
 
 
 //    implementation ("com.google.firebase:firebase-crashlytics-ktx:18.5.1")

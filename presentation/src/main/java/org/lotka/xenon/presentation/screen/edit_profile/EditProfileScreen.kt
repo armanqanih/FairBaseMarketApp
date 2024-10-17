@@ -61,6 +61,7 @@ fun EditProfileScreen(
                     onNavigateUp()
                 }
 
+                is UiEvent.Navigate -> TODO()
             }
         }
     }

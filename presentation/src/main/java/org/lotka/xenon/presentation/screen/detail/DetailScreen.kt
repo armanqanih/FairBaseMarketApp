@@ -59,6 +59,7 @@ fun DetailScreen(
                     )
                 }
                 UiEvent.onNavigateUp -> { onNavigateUp() }
+                is UiEvent.Navigate -> TODO()
             }
         }
     }

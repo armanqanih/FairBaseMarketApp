@@ -4,7 +4,7 @@ package org.lotka.xenon.domain.util
 
 object Constants {
 
-    const val SPLASH_SCREEN_DURATION = 3000L
+
     const val PC = "Pc"
     const val SMARTPHONE = "Smartphone"
     const val HEADPHONE = "Headphone"
@@ -26,12 +26,15 @@ object Constants {
     val IconSizeLarge = 35
 
 
-
     val profilePictureSizeLarge = 125
     val profilePictureSizeMedium = 75
     val profilePictureSmallSize = 30
 
 
+    const val SPLASH_SCREEN_DURATION = 3000L
+    const val MAX_DESCRIPTION_LINE = 3
+    const val MIN_USERNAME_LENGTH = 3
+    const val MIN_PASSWORD_LENGTH = 3
 
 
 }

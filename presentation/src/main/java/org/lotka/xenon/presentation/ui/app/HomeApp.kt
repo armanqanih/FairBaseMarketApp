@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import org.lotka.xenon.presentation.screen.auth.login.LoginScreen
 import org.lotka.xenon.presentation.screen.my_order.MyOrderScreen
 import org.lotka.xenon.presentation.screen.detail.DetailScreen
 import org.lotka.xenon.presentation.screen.explore.ExploreScreen
@@ -27,6 +28,7 @@ import org.lotka.xenon.presentation.screen.wish_list.WishListScreen
 import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 import org.lotka.xenon.presentation.screen.profile.ProfileScreen
 import org.lotka.xenon.presentation.screen.edit_profile.EditProfileScreen
+import org.lotka.xenon.presentation.screen.auth.register.RegisterScreen
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -53,8 +55,27 @@ fun HomeApp(
         content = { _ ->
             NavHost(
                 navController = navController,
-                startDestination = ScreensNavigation.EditProfileScreen.route,
+                startDestination = ScreensNavigation.LoginScreen.route,
             ) {
+                composable(
+                    route = ScreensNavigation.LoginScreen.route,
+                ) {
+                    LoginScreen(
+                        onNavigateTo = navController::navigate,
+                        onNavigateUp = navController::navigateUp)
+
+                }
+
+                composable(
+                    route = ScreensNavigation.RegisterScreen.route,
+                ) {
+                    RegisterScreen(
+                        onNavigateTo = navController::navigate,
+                        onNavigateUp = navController::navigateUp)
+
+                }
+
+
                 composable(
                     route = ScreensNavigation.ExploreScreen.route,
                 ) {

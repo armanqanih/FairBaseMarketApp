@@ -65,6 +65,8 @@ fun ExploreScreen(
                 UiEvent.onNavigateUp -> {
 
                 }
+
+                is UiEvent.Navigate -> TODO()
             }
         }
     }

@@ -41,6 +41,8 @@ fun HomeApp(
     onToggleTheme: () -> Unit,
     keyboardController: SoftwareKeyboardController,
 
+
+
     ) {
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -61,8 +63,10 @@ fun HomeApp(
                     route = ScreensNavigation.LoginScreen.route,
                 ) {
                     LoginScreen(
+
                         onNavigateTo = navController::navigate,
-                        onNavigateUp = navController::navigateUp)
+                        onNavigateUp = navController::navigateUp
+                    )
 
                 }
 
@@ -71,7 +75,8 @@ fun HomeApp(
                 ) {
                     RegisterScreen(
                         onNavigateTo = navController::navigate,
-                        onNavigateUp = navController::navigateUp)
+                        onNavigateUp = navController::navigateUp
+                    )
 
                 }
 
@@ -93,13 +98,13 @@ fun HomeApp(
                     MyOrderScreen(onNavigateUp = navController::navigateUp)
 
                 }
-           composable(
+                composable(
                     route = ScreensNavigation.SearchScreen.route,
                 ) {
                     SearchScreen(
                         onNavigateUp = navController::navigateUp,
                         onNavigateToDetail = navController::navigate
-                        )
+                    )
 
                 }
 
@@ -117,9 +122,8 @@ fun HomeApp(
 
                 }
                 composable(
-                    route = ScreensNavigation.EditProfileScreen.route
+                    route = ScreensNavigation.EditProfileScreen.route,
 //                            + "/{userId}"
-                    ,
 //                    arguments = listOf(navArgument("userId")
 //                    { type = NavType.StringType }),
                 ) {

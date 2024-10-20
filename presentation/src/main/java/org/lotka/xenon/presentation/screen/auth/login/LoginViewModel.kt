@@ -1,16 +1,25 @@
 package org.lotka.xenon.presentation.screen.auth.login
 
+import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
+import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.lotka.xenon.domain.model.User
+import org.lotka.xenon.domain.usecase.auth.GoogleSignInUseCase
 import org.lotka.xenon.domain.usecase.auth.LoginUserUseCase
 import org.lotka.xenon.domain.util.Resource
+import org.lotka.xenon.domain.util.SignInResult
 import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 import org.lotka.xenon.presentation.util.PasswordTextFieldState
 import org.lotka.xenon.presentation.util.StandardTextFieldState
@@ -23,7 +32,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUserUseCase,
-    private val sharedPreferences: SharedPreferences
+//    private val googleSignInUseCase: GoogleSignInUseCase,
+    private val sharedPreferences: SharedPreferences,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
@@ -48,14 +58,17 @@ class LoginViewModel @Inject constructor(
 
 
     fun onEvent(event: LoginEvent) {
-        when(event) {
+        when (event) {
             is LoginEvent.EnterPassword -> {
                 _passwordState.value = _passwordState.value.copy(
-                    text = event.password)
+                    text = event.password
+                )
             }
+
             is LoginEvent.EnterEmail -> {
                 _emailState.value = _emailState.value.copy(
-                    text = event.userName)
+                    text = event.userName
+                )
             }
 
             is LoginEvent.ShowSnakeBar -> {
@@ -63,6 +76,7 @@ class LoginViewModel @Inject constructor(
                     _eventFlow.emit(UiEvent.ShowSnakeBar(event.message))
                 }
             }
+
             is LoginEvent.Login -> {
                 viewModelScope.launch {
                     login()
@@ -95,11 +109,13 @@ class LoginViewModel @Inject constructor(
 
         if (loginResult.emailError != null) {
             _emailState.value = _emailState.value.copy(
-                error = loginResult.emailError)
+                error = loginResult.emailError
+            )
         }
         if (loginResult.passwordError != null) {
             _passwordState.value = _passwordState.value.copy(
-                error = loginResult.passwordError)
+                error = loginResult.passwordError
+            )
         }
 
         _state.value = _state.value.copy(isLoading = true)
@@ -116,6 +132,7 @@ class LoginViewModel @Inject constructor(
                             _eventFlow.emit(UiEvent.Navigate(ScreensNavigation.ExploreScreen.route))
                         }
                     }
+
                     is Resource.Error -> {
                         _state.value = _state.value.copy(isLoading = false)
                         // If error message contains "no user", show "You don't have an account" message
@@ -126,6 +143,7 @@ class LoginViewModel @Inject constructor(
                         }
                         _eventFlow.emit(UiEvent.ShowSnakeBar(errorMessage))
                     }
+
                     is Resource.Loading -> {
                         _state.value = _state.value.copy(isLoading = true)
                     }
@@ -137,20 +155,67 @@ class LoginViewModel @Inject constructor(
         }
 
 
-
     }
 
+    fun onSignInResult(result: SignInResult) {
+        _state.update { it.copy(
+            isSignInSuccessful = result.data != null,
+            signInError = result.errorMessage
+        ) }
+    }
 
-
-
-
-
-
-
-
-
-
-
-
+    fun resetState() {
+        _state.update { LoginState() }
+    }
 }
+
+
+
+
+
+
+    // Function to handle Google Sign-In
+    // Add logging to see if the function is triggered
+//    fun googleSignIn(context: Context) {
+//        Log.d("LoginViewModel", "Google sign-in initiated.")
+//        viewModelScope.launch {
+//            googleSignInUseCase.invoke(context).collect { result ->
+//                when (result) {
+//                    is Resource.Success -> {
+//                        Log.d("LoginViewModel", "Sign-in successful.")
+//                        _state.value = _state.value.copy(
+//                            isLoading = false,
+//                            user = User(
+//                                result.data?.user?.uid ?: "",
+//                                result.data?.user?.displayName ?: "",
+//                                result.data?.user?.photoUrl.toString() ?: "",
+//                                result.data?.user?.email ?: "",
+//                            )
+//                        )
+//                        _eventFlow.emit(UiEvent.Navigate(ScreensNavigation.ProfileScreen.route))
+//                    }
+//                    is Resource.Error -> {
+//                        Log.e("LoginViewModel", "Sign-in failed: ${result.message}")
+//                        _state.value = _state.value.copy(
+//                            isLoading = false,
+//                            error = result.message
+//                        )
+//                    }
+//                    is Resource.Loading -> {
+//                        Log.d("LoginViewModel", "Signing in...")
+//                        _state.value = _state.value.copy(isLoading = true)
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+
+
+
+
+
+
+
+
 

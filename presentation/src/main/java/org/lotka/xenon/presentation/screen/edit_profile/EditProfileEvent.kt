@@ -6,9 +6,8 @@ import org.lotka.xenon.presentation.util.StandardTextFieldState
 
 sealed class EditProfileEvent {
 
-    data class UserNameChange(val userNameState : StandardTextFieldState) : EditProfileEvent()
-    data class FamilyNameChange(val familyName : StandardTextFieldState) : EditProfileEvent()
-    data class EmailChange(val email : StandardTextFieldState) : EditProfileEvent()
+    data class UserNameChange(val userNameState : String) : EditProfileEvent()
+    data class EmailChange(val email : String) : EditProfileEvent()
     data class PasswordChange(val password : PasswordTextFieldState) : EditProfileEvent()
 
 

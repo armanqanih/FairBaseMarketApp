@@ -1,4 +1,8 @@
 <resources>
+
+    <string name="web_client_id">1051080135345-cfu5e2pmfnkv4rolh087v78692o508eu.apps.googleusercontent.com</string>
+
+
     <string name="username">UserName</string>
     <string name="password1">Password</string>
     <string name="emile1">Email</string>

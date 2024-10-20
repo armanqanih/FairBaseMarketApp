@@ -14,7 +14,11 @@ import org.lotka.xenon.domain.repository.ProfileRepository
 import org.lotka.xenon.domain.util.Resource
 import javax.inject.Inject
 import android.util.Log
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.lotka.xenon.data.remote.dao.local.database.ProfileDataBase
 import org.lotka.xenon.data.remote.dao.local.entity.toItems
@@ -23,8 +27,9 @@ import org.lotka.xenon.data.remote.dao.local.entity.toUser
 import org.lotka.xenon.data.remote.dao.local.entity.toUserEntity
 import org.lotka.xenon.domain.model.Item
 class ProfileRepositoryImpl @Inject constructor(
-    private val realtimeDatabase: FirebaseDatabase,
-    private val storage: FirebaseStorage,
+    private val firebaseStorage: FirebaseStorage,
+    private val firebaseAuth: FirebaseAuth,
+    private val firestore: FirebaseFirestore, // Inject Firestore
     private val db: ProfileDataBase
 ) : ProfileRepository {
 
@@ -32,21 +37,35 @@ class ProfileRepositoryImpl @Inject constructor(
         emit(Resource.Loading(true))
 
         try {
-            // Check if the item exists in Room first
-            val cachedUser = db.profileDao().getUserById(userId)
-            if (cachedUser != null) {
-                emit(Resource.Success(cachedUser.toUser()))
-            } else {
-                // If item is not found in Room, fetch from Firebase
-                val itemReference = realtimeDatabase.getReference("users/$userId")
-                val snapshot = itemReference.get().await()
+            val currentUser = firebaseAuth.currentUser ?: run {
+                emit(Resource.Error("User is not authenticated. Please sign in first."))
+                return@flow
+            }
 
-                val user = snapshot.getValue(User::class.java)
-                if (user != null) {
-                    db.profileDao().saveUserData(user.toUserEntity())
-                    emit(Resource.Success(user))
+            val firebaseUserProfile = User(
+                userId = currentUser.uid,
+                email = currentUser.email ?: "",
+                username = currentUser.displayName ?: "Unknown User",
+                profileImageUrl = currentUser.photoUrl?.toString() ?: "",
+            )
+
+            // Check if the user exists in the local Room database
+            val cachedUser = db.profileDao().getUserById(currentUser.uid)
+            if (cachedUser != null) {
+                emit(Resource.Success(cachedUser.toUser())) // Return cached user
+            } else {
+                // If no cache, use Firestore to fetch user data
+                val firestoreUser = firestore.collection("users").document(currentUser.uid).get().await()
+                if (firestoreUser.exists()) {
+                    val userData = firestoreUser.toObject(User::class.java)
+                    userData?.let {
+                        db.profileDao().saveUserData(it.toUserEntity()) // Save to local Room database
+                        emit(Resource.Success(it))
+                    } ?: emit(Resource.Error("User data not found in Firestore."))
                 } else {
-                    emit(Resource.Error("User not found in Firebase"))
+                    // Save the FirebaseAuth user info if no Firestore data exists
+                    db.profileDao().saveUserData(firebaseUserProfile.toUserEntity())
+                    emit(Resource.Success(firebaseUserProfile))
                 }
             }
         } catch (e: Exception) {
@@ -58,53 +77,42 @@ class ProfileRepositoryImpl @Inject constructor(
 
     override suspend fun upDateProfileData(
         updateProfileData: User,
-        profileImageUri: Uri?  // Optional image URI
+        profileImageUri: Uri?
     ): Flow<Resource<User>> = flow {
         emit(Resource.Loading())
-
         try {
-            // 1. Check if the user is authenticated
-            val currentUser = FirebaseAuth.getInstance().currentUser
-            if (currentUser == null) {
+            val currentUser = firebaseAuth.currentUser ?: run {
                 emit(Resource.Error("User is not authenticated. Please sign in first."))
                 return@flow
             }
 
-            // 2. Upload profile image if present
+            // Upload profile image and get URL if present
             val profileImageUrl = profileImageUri?.let {
-                val storageRef = storage.reference.child("profile_images/${updateProfileData.userId}")
-                try {
-                    storageRef.putFile(it).await()  // Upload image to Firebase Storage
-                    storageRef.downloadUrl.await().toString()  // Get the download URL
-                } catch (e: Exception) {
-                    Log.e("ProfileRepository", "Failed to upload profile image", e)
-                    emit(Resource.Error("Failed to upload profile image: ${e.message}"))
-                    return@flow
-                }
-            }
+                val storageRef = firebaseStorage.reference.child("profile_images/${currentUser.uid}")
+                storageRef.putFile(it).await()
+                storageRef.downloadUrl.await().toString()
+            } ?: updateProfileData.profileImageUrl // Fallback to existing URL if no new image
 
-            // 3. Update user data in Firebase Realtime Database
-            val updatedUser = updateProfileData.copy(
-                profileImageUrl = profileImageUrl ?: updateProfileData.profileImageUrl
-            )
+            // Update FirebaseAuth user profile
+            val profileUpdates = UserProfileChangeRequest.Builder()
+                .setDisplayName(updateProfileData.username)
+                .setPhotoUri(Uri.parse(profileImageUrl))
+                .build()
 
-            val userReference = realtimeDatabase.getReference("users/${updatedUser.userId}")
-            try {
-                userReference.setValue(updatedUser).await()  // Update user in Realtime Database
-            } catch (e: Exception) {
-                Log.e("ProfileRepository", "Failed to update user data in Firebase", e)
-                emit(Resource.Error("Failed to update user data: ${e.message}"))
-                return@flow
-            }
+            currentUser.updateProfile(profileUpdates).await()
 
-            // 4. Update the user profile in Room (local database)
-            db.profileDao().saveUserData(updatedUser.toUserEntity())
+            // Update user in Firestore
+            val userDocument = firestore.collection("users").document(currentUser.uid)
+            userDocument.set(updateProfileData.copy(profileImageUrl = profileImageUrl)).await()
 
-            emit(Resource.Success(updatedUser))
+            // Save the updated user data in the local database
+            db.profileDao().saveUserData(updateProfileData.copy(profileImageUrl = profileImageUrl).toUserEntity())
+            emit(Resource.Success(updateProfileData.copy(profileImageUrl = profileImageUrl)))
 
         } catch (e: Exception) {
-            Log.e("ProfileRepository", "Failed to update profile", e)
             emit(Resource.Error("Error updating profile: ${e.message}"))
         }
     }
 }
+
+

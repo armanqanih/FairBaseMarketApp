@@ -2,6 +2,7 @@ package org.lotka.xenon.presentation.screen.edit_profile
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -18,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -31,6 +34,7 @@ import org.lotka.xenon.domain.util.Constants.SpaceToLarge
 import org.lotka.xenon.presentation.compose.StandardButton
 import org.lotka.xenon.presentation.compose.StandardTextField
 import org.lotka.xenon.presentation.compose.StandardTopBar
+import org.lotka.xenon.presentation.screen.auth.login.LoginViewModel
 import org.lotka.xenon.presentation.screen.edit_profile.compose.ProfileSection
 import org.lotka.xenon.presentation.util.CropActivityResultContract
 import org.lotka.xenon.presentation.util.PasswordTextFieldState
@@ -42,6 +46,8 @@ fun EditProfileScreen(
     viewModel: EditProfileViewModel = hiltViewModel(),
     onNavigateUp: () -> Unit,
 ) {
+
+
     val state = viewModel.state.collectAsState().value
     val passwordState = viewModel.passwordState.collectAsState().value
 
@@ -84,7 +90,20 @@ fun EditProfileScreen(
     }
 
 
-
+    Box(modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ){
+        if (state.isLoading){
+            CircularProgressIndicator()
+        }
+        state.error.let {
+            Text(text = "Oops Somethings Went wrong ${state.error.toString()}",
+                style = MaterialTheme.typography.h2,
+                color = Color.Red,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
 
 
 
@@ -120,48 +139,27 @@ Scaffold (scaffoldState = scaffoldState){
         )
         StandardTextField(
             modifier = Modifier.padding(start = SpaceSmall.dp, end = SpaceSmall.dp),
-            value = state.userNameState.text,
+            value =  state.userNameState?:"Arman Sherwanii",
             hint = "User Name",
             maxLines = 1,
             keyboardType = KeyboardType.Text,
             onValueChange = {
                 viewModel.onEvent(
-                    EditProfileEvent.UserNameChange(
-                        StandardTextFieldState(text = it)
-                    )
+                    EditProfileEvent.UserNameChange(it)
                 )
             }
 
         )
+
         Spacer(modifier = Modifier.height(SpaceMedium.dp))
         StandardTextField(
             modifier = Modifier.padding(start = SpaceSmall.dp, end = SpaceSmall.dp),
-            value = state.familyNameState.text,
-
-            hint = "Family Name",
-            maxLines = 1,
-            keyboardType = KeyboardType.Text,
-            onValueChange = {
-                viewModel.onEvent(
-                    EditProfileEvent.FamilyNameChange(
-                        StandardTextFieldState(text = it)
-                    )
-                )
-            }
-
-        )
-        Spacer(modifier = Modifier.height(SpaceMedium.dp))
-        StandardTextField(
-            modifier = Modifier.padding(start = SpaceSmall.dp, end = SpaceSmall.dp),
-            value = state.emailState.text,
-
+            value = state.emailState?:"Test123@gmal.Com",
             hint = "Email",
             maxLines = 1,
             onValueChange = {
                 viewModel.onEvent(
-                    EditProfileEvent.EmailChange(
-                        StandardTextFieldState(text = it)
-                    )
+                    EditProfileEvent.EmailChange(it)
                 )
             },
             keyboardType = KeyboardType.Email

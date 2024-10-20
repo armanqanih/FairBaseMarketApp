@@ -18,7 +18,6 @@ import org.lotka.xenon.presentation.util.StandardTextFieldState
 import org.lotka.xenon.presentation.util.UiEvent
 
 import javax.inject.Inject
-
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
     private val getProfileUseCase: GetProfileUseCase,
@@ -28,6 +27,7 @@ class EditProfileViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(EditProfileState())
     val state = _state.asStateFlow()
+
     private val _passwordState = MutableStateFlow(PasswordTextFieldState())
     val passwordState = _passwordState.asStateFlow()
 
@@ -35,7 +35,7 @@ class EditProfileViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        savedStateHandle.get<String>("1")?.let { userId ->
+        savedStateHandle.get<String>("userId")?.let { userId ->
             getProfile(userId)
         }
     }
@@ -46,29 +46,20 @@ class EditProfileViewModel @Inject constructor(
                 _state.value = _state.value.copy(userNameState = event.userNameState)
             }
 
-            is EditProfileEvent.FamilyNameChange -> {
-                _state.value = _state.value.copy(familyNameState = event.familyName)
-            }
-
             is EditProfileEvent.EmailChange -> {
                 _state.value = _state.value.copy(emailState = event.email)
             }
-
             is EditProfileEvent.PasswordChange -> {
                 _passwordState.value = _passwordState.value.copy(
-                    text = event.password.text)
+                    text = event.password.text
+                )
             }
-
-
             is EditProfileEvent.CropProfilePicture -> {
                 _state.value = _state.value.copy(profileImageUri = event.uri)
             }
-
             EditProfileEvent.UpdateProfile -> {
                 updateProfile()
-
             }
-
             EditProfileEvent.IsPasswordVisibility -> {
                 _passwordState.value = _passwordState.value.copy(
                     isPasswordVisible = !passwordState.value.isPasswordVisible
@@ -79,14 +70,19 @@ class EditProfileViewModel @Inject constructor(
 
     private fun updateProfile() {
         viewModelScope.launch {
+            val user = _state.value.user
+            if (user == null) {
+                _eventFlow.emit(UiEvent.ShowSnakeBar("User data is missing."))
+                return@launch
+            }
+
             _state.value = _state.value.copy(isLoading = true)
 
             updateProfileUseCase(
                 updateProfileData = User(
-                    userId = _state.value.user?.userId ?: "",
-                    username = _state.value.user?.username?:"",
-                    email = _state.value.user?.email?:"",
-                    family = _state.value.user?.family?:""
+                    userId = user.userId,
+                    username = _state.value.userNameState,
+                    email = _state.value.emailState,
                 ),
                 profileImageUri = _state.value.profileImageUri
             ).collect { result ->
@@ -97,7 +93,9 @@ class EditProfileViewModel @Inject constructor(
                         _eventFlow.emit(UiEvent.onNavigateUp)
                     }
                     is Resource.Error -> {
-                        _state.value = _state.value.copy(isLoading = false)
+                        _state.value = _state.value.copy(
+                            error = result.message,
+                            isLoading = false)
                         _eventFlow.emit(UiEvent.ShowSnakeBar(result.message ?: "Unknown error"))
                     }
                     is Resource.Loading -> {
@@ -111,18 +109,17 @@ class EditProfileViewModel @Inject constructor(
     private fun getProfile(userId: String) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
-
             getProfileUseCase(userId).collect { result ->
                 when (result) {
                     is Resource.Success -> {
-                        val user = result.data ?: kotlin.run {
+                        val user = result.data ?: run {
                             _eventFlow.emit(UiEvent.ShowSnakeBar("Profile Not Found"))
                             return@collect
                         }
                         _state.value = _state.value.copy(
-                            userNameState = StandardTextFieldState(text = user.username ?: ""),
-                            emailState = StandardTextFieldState(text = user.email ?: ""),
                             user = user,
+                            userNameState =  user.username,
+                            emailState =  user.email?:"",
                             isLoading = false
                         )
                     }
@@ -137,5 +134,5 @@ class EditProfileViewModel @Inject constructor(
             }
         }
     }
-}
 
+}

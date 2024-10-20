@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "1051080135345",
+    "firebase_url": "https://marketingapp-ec5a9-default-rtdb.firebaseio.com",
     "project_id": "marketingapp-ec5a9",
     "storage_bucket": "marketingapp-ec5a9.appspot.com"
   },
@@ -12,7 +13,20 @@
           "package_name": "org.lotka.xenon"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1051080135345-2p402jccr9hrmkihgodscibc3i6braft.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.lotka.xenon",
+            "certificate_hash": "ed24e20762eac8473708e514609a218e8a0be0eb"
+          }
+        },
+        {
+          "client_id": "1051080135345-cfu5e2pmfnkv4rolh087v78692o508eu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB4ybMBdgGMsjAiy1xehMF0AkHGOFVdbBQ"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1051080135345-cfu5e2pmfnkv4rolh087v78692o508eu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

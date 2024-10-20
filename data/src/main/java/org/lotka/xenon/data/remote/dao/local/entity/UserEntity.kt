@@ -11,7 +11,6 @@ import org.lotka.xenon.domain.model.User
 data class UserEntity (
     @PrimaryKey val userId:String,
     val username : String,
-    val family:String,
     val profileImageUrl : String?=null,
     val email:String? = null
     
@@ -21,7 +20,6 @@ fun UserEntity.toUser(): User {
     return User(
         userId = this.userId,
         username = this.username,
-        family = this.family,
         profileImageUrl = this.profileImageUrl,
         email = this.email
     )
@@ -31,7 +29,6 @@ fun User.toUserEntity(): UserEntity {
     return UserEntity(
         userId = this.userId,
         username = this.username,
-        family = this.family,
         profileImageUrl = this.profileImageUrl,
         email = this.email
     )

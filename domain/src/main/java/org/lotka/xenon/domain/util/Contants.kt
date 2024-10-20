@@ -12,6 +12,8 @@ object Constants {
     const val CAMERA = "Camera"
     const val SMARTWATCH = "Smartwatch"
 
+    const val WEB_CLIENT_ID = "Smartwatch"
+
 
     val SpaceSmall = 8
     val SpaceMedium = 16

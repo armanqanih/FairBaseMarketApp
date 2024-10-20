@@ -43,7 +43,7 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.10.0")
+    implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.autofill:autofill:1.1.0")
 
     implementation("androidx.compose.ui:ui:1.5.3")
@@ -51,6 +51,15 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.0")
+
+
+    //google signIn
+    implementation ("com.google.android.gms:play-services-auth-base:18.0.13")
+    implementation ("com.google.android.gms:play-services-auth:20.5.0")
+    implementation ("androidx.credentials:credentials:1.3.0")
+    implementation ("androidx.credentials:credentials-play-services-auth:1.1.0")
+    implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
 
     //One Signal
     implementation ("com.onesignal:OneSignal:[4.0.0, 4.99.99]")
@@ -86,7 +95,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
 
     // PlayService
-    implementation("com.google.android.gms:play-services-auth-api-phone:18.0.1")
+    implementation("com.google.android.gms:play-services-auth-api-phone:18.1.0")
     //Phone number validation
     implementation("com.googlecode.libphonenumber:libphonenumber:8.13.5")
 
@@ -100,6 +109,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx:24.10.2")
     implementation("com.google.firebase:firebase-storage:20.3.0")
     implementation("androidx.paging:paging-common-android:3.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     kapt("androidx.room:room-compiler:2.6.0")
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:2.6.0")
@@ -167,10 +177,10 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:6.0.1")
 
     //gms - auth APIs
-    implementation("com.google.android.gms:play-services-base:18.2.0")
-    implementation("com.google.android.gms:play-services-auth-api-phone:18.0.1")
+    implementation("com.google.android.gms:play-services-base:18.5.0")
+    implementation("com.google.android.gms:play-services-auth-api-phone:18.1.0")
     //Optional for phone number hint
-    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.android.gms:play-services-auth:20.5.0")
 
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
@@ -185,8 +195,8 @@ dependencies {
 
 //    implementation ("com.google.firebase:firebase-crashlytics-ktx:18.5.1")
 //    implementation ("com.google.firebase:firebase-perf-ktx:20.5.0")
-    implementation("com.google.android.gms:play-services-tagmanager:18.0.4")
-    implementation("com.google.android.gms:play-services-tagmanager-v4-impl:18.0.4")
+    implementation("com.google.android.gms:play-services-tagmanager:18.1.0")
+    implementation("com.google.android.gms:play-services-tagmanager-v4-impl:18.1.0")
 
     implementation("androidx.core:core-animation:1.0.0-rc01")
     //mpandroid chart

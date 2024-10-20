@@ -12,9 +12,8 @@ data class EditProfileState(
     val user : User? = null,
     val profileImageUri: Uri? = null,
 
-    val userNameState : StandardTextFieldState = StandardTextFieldState(),
-    val familyNameState : StandardTextFieldState = StandardTextFieldState(),
-    val emailState : StandardTextFieldState = StandardTextFieldState(),
+    val userNameState : String? ="",
+    val emailState : String? ="",
 
 
 

@@ -2,6 +2,7 @@ package org.lotka.xenon.di
 
 import ExploreRepositoryImpl
 import android.content.Context
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -34,11 +35,13 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideProfileRepository(
-        realtimeDatabase: FirebaseDatabase,
+        firebaseAuth: FirebaseAuth,
+        firestore: FirebaseFirestore,
         storage: FirebaseStorage,
         db: ProfileDataBase
     ): ProfileRepository {
-        return ProfileRepositoryImpl(realtimeDatabase,storage,db)
+        return ProfileRepositoryImpl( firebaseAuth = firebaseAuth,
+            firebaseStorage = storage, firestore = firestore , db = db )
     }
 
 

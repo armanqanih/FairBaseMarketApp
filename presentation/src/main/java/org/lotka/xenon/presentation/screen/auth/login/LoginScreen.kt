@@ -84,27 +84,8 @@ fun LoginScreen(
 
     val scope = rememberCoroutineScope()
 
-     val googleAuthUiClient by lazy {
-        GoogleAuthUiClient(
-            context = context,
-            oneTapClient = Identity.getSignInClient(context)
-        )
-    }
 
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartIntentSenderForResult(),
-        onResult = { result ->
-            if(result.resultCode == RESULT_OK) {
-                scope.launch {
-                    val signInResult = googleAuthUiClient.signInWithIntent(
-                        intent = result.data ?: return@launch
-                    )
-                    viewModel.onSignInResult(signInResult)
-                }
-            }
-        }
-    )
 
 
     LaunchedEffect(key1 = true) {
@@ -297,14 +278,7 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-                    scope.launch {
-                        val signInIntentSender = googleAuthUiClient.signIn()
-                        launcher.launch(
-                            IntentSenderRequest.Builder(
-                                signInIntentSender ?: return@launch
-                            ).build()
-                        )
-                    }
+
 //                 viewModel.googleSignIn(context)
                 },
                 modifier = Modifier

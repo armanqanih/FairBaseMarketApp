@@ -21,7 +21,7 @@ import com.google.android.gms.auth.api.identity.Identity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.lotka.xenon.presentation.compose.StandardScaffold
-import org.lotka.xenon.presentation.screen.auth.login.GoogleAuthUiClient
+
 import org.lotka.xenon.presentation.theme.CleanArchitectureMovieAppTheme
 import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 

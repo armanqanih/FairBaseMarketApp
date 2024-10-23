@@ -88,6 +88,9 @@ class LoginViewModel @Inject constructor(
                     isPasswordVisible = !passwordState.value.isPasswordVisible
                 )
             }
+
+            is LoginEvent.OnSignIn -> TODO()
+            is LoginEvent.OnSignUp -> TODO()
         }
     }
 

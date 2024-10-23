@@ -49,6 +49,7 @@ fun EditProfileScreen(
 
 
     val state = viewModel.state.collectAsState().value
+    val user = viewModel.state.collectAsState().value.user
     val passwordState = viewModel.passwordState.collectAsState().value
 
 
@@ -137,34 +138,38 @@ Scaffold (scaffoldState = scaffoldState){
                 profilePictureGalleryLauncher.launch("image/*")
             }
         )
-        StandardTextField(
-            modifier = Modifier.padding(start = SpaceSmall.dp, end = SpaceSmall.dp),
-            value =  state.userNameState?:"Arman Sherwanii",
-            hint = "User Name",
-            maxLines = 1,
-            keyboardType = KeyboardType.Text,
-            onValueChange = {
-                viewModel.onEvent(
-                    EditProfileEvent.UserNameChange(it)
-                )
-            }
+        state.userNameState?.let { it1 ->
+            StandardTextField(
+                modifier = Modifier.padding(start = SpaceSmall.dp, end = SpaceSmall.dp),
+                value = it1,
+                hint = "User Name",
+                maxLines = 1,
+                keyboardType = KeyboardType.Text,
+                onValueChange = {
+                    viewModel.onEvent(
+                        EditProfileEvent.UserNameChange(it)
+                    )
+                }
 
-        )
+            )
+        }
 
         Spacer(modifier = Modifier.height(SpaceMedium.dp))
-        StandardTextField(
-            modifier = Modifier.padding(start = SpaceSmall.dp, end = SpaceSmall.dp),
-            value = state.emailState?:"Test123@gmal.Com",
-            hint = "Email",
-            maxLines = 1,
-            onValueChange = {
-                viewModel.onEvent(
-                    EditProfileEvent.EmailChange(it)
-                )
-            },
-            keyboardType = KeyboardType.Email
+        state.emailState?.let { it1 ->
+            StandardTextField(
+                modifier = Modifier.padding(start = SpaceSmall.dp, end = SpaceSmall.dp),
+                value = it1,
+                hint = "Email",
+                maxLines = 1,
+                onValueChange = {
+                    viewModel.onEvent(
+                        EditProfileEvent.EmailChange(it)
+                    )
+                },
+                keyboardType = KeyboardType.Email
 
-        )
+            )
+        }
         Spacer(modifier = Modifier.height(SpaceMedium.dp))
 //        StandardTextField(
 //            modifier = Modifier.padding(start = SpaceSmall.dp, end = SpaceSmall.dp),

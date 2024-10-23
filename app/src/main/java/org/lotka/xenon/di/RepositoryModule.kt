@@ -36,12 +36,12 @@ object RepositoryModule {
     @Singleton
     fun provideProfileRepository(
         firebaseAuth: FirebaseAuth,
-        firestore: FirebaseFirestore,
+        realtimeDatabase: FirebaseDatabase,
         storage: FirebaseStorage,
         db: ProfileDataBase
     ): ProfileRepository {
         return ProfileRepositoryImpl( firebaseAuth = firebaseAuth,
-            firebaseStorage = storage, firestore = firestore , db = db )
+            firebaseStorage = storage, realtimeDatabase = realtimeDatabase , db = db )
     }
 
 

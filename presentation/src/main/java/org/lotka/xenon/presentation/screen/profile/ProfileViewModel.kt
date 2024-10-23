@@ -1,5 +1,6 @@
 package org.lotka.xenon.presentation.screen.profile
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -39,34 +40,39 @@ class ProfileViewModel @Inject constructor(
     }
 
 
-       fun logoutUser(){
-           viewModelScope.launch {
-               logOutUserUseCase.invoke().collect{result->
-                   when(result){
-                       is Resource.Error -> {
-                           _eventFlow.emit(UiEvent.ShowSnakeBar("Cant Logout please try again later"))
-                           _state.value = _state.value.copy(
-                               error = "Cant Logout please try again later",
-                               isLoading = false)
-                       }
-                       is Resource.Loading -> {
-                           _state.value = _state.value.copy(isLoading = true)
-                       }
-                       is Resource.Success -> {
-                           _eventFlow.emit(UiEvent.Navigate(ScreensNavigation.LoginScreen.route))
-                       }
-                   }
-               }
-           }
-
+    fun logoutUser() {
+        viewModelScope.launch {
+            Log.d("Logout", "logoutUser function called")
+            logOutUserUseCase.invoke().collect { result ->
+                when (result) {
+                    is Resource.Error -> {
+                        Log.e("Logout Error", result.message ?: "Unknown Error")
+                        _eventFlow.emit(UiEvent.ShowSnakeBar("Can't logout, please try again later"))
+                        _state.value = _state.value.copy(
+                            error = "Can't logout, please try again later",
+                            isLoading = false
+                        )
+                    }
+                    is Resource.Loading -> {
+                        _state.value = _state.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        Log.d("Logout", "User successfully logged out")
+                        _state.value = _state.value.copy(isLoading = false)
+                        _eventFlow.emit(UiEvent.Navigate(ScreensNavigation.LoginScreen.route)) // Navigate to Login screen
+                    }
+                }
+            }
+        }
     }
 
 
 
     // Fetches the profile using the GetProfileUseCase
-    private fun getProfile(userId: String) {
+    fun getProfile(userId: String) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true) // Set loading state
+
             getProfileUseCase(userId).collect { result ->
                 when (result) {
                     is Resource.Success -> {
@@ -75,32 +81,34 @@ class ProfileViewModel @Inject constructor(
                             _state.value = _state.value.copy(
                                 user = User(
                                     userId = user.userId,
-                                    email = user.email,
                                     username = user.username,
                                     profileImageUrl = user.profileImageUrl
                                 ),
-                                isLoading = false)
+                                isLoading = false
+                            )
                         } else {
-                            _eventFlow.emit(UiEvent.ShowSnakeBar("Profile not found"))
                             _state.value = _state.value.copy(
-                                error = "Profile Not Found",
-                                isLoading = false)
+                                error = "Profile not found",
+                                isLoading = false
+                            )
+                            _eventFlow.emit(UiEvent.ShowSnakeBar("Profile not found"))
                         }
                     }
                     is Resource.Error -> {
-                        _eventFlow.emit(UiEvent.ShowSnakeBar(result.message ?: "Unknown error"))
                         _state.value = _state.value.copy(
-                            error = result.message,
-                            isLoading = false) // Reset loading state
+                            error = result.message ?: "Unknown error",
+                            isLoading = false
+                        )
+                        _eventFlow.emit(UiEvent.ShowSnakeBar(result.message ?: "Unknown error"))
                     }
                     is Resource.Loading -> {
                         _state.value = _state.value.copy(isLoading = true)
                     }
-
                 }
             }
         }
     }
+
 
 
 

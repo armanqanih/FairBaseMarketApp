@@ -19,6 +19,7 @@ import org.lotka.xenon.data.remote.dao.local.ProfileDao
 import org.lotka.xenon.data.remote.dao.local.database.ProfileDataBase
 import org.lotka.xenon.data.remote.repository.AuthRepositoryImpl
 import org.lotka.xenon.domain.repository.AuthRepository
+import org.lotka.xenon.domain.util.NewAccountManager
 
 
 import javax.inject.Singleton
@@ -32,11 +33,22 @@ object AppModule {
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 
+
+    @Provides
+    fun provideNewAccountManager(
+        @ApplicationContext context: Context
+    ): NewAccountManager {
+        return NewAccountManager(context)
+    }
+
+
+
     @Provides
     @Singleton
     fun provideAuthRepository(
-        firebaseAuth: FirebaseAuth
-    ): AuthRepository = AuthRepositoryImpl(firebaseAuth)
+        firebaseAuth: FirebaseAuth,
+      realtimeDatabase: FirebaseDatabase,
+    ): AuthRepository = AuthRepositoryImpl(firebaseAuth,realtimeDatabase)
 
     @Provides
     @Singleton

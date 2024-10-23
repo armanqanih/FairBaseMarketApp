@@ -9,15 +9,18 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.FirebaseDatabase
 import ir.pinto.market.data.R
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import org.lotka.xenon.domain.model.User
 import org.lotka.xenon.domain.repository.AuthRepository
 import org.lotka.xenon.domain.util.Resource
 import java.security.MessageDigest
@@ -27,6 +30,7 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
+    private val realtimeDatabase: FirebaseDatabase,
 ) : AuthRepository {
     override suspend fun registerUser(
         name: String,
@@ -37,9 +41,18 @@ class AuthRepositoryImpl @Inject constructor(
             try {
                 emit(Resource.Loading()) // Emit loading state
                 val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-                if (result.user != null) {
-                    emit(Resource.Success(result)) // Emit success state
-                }
+                val user = result.user
+                if (user != null) {
+                    // Create User object
+                    val newUser = User(
+                        userId =  user.uid,
+                        username = name,
+                        email =  email,
+                        profileImageUrl = user.photoUrl.toString()
+                    )
+                    // Save user data to Realtime Database
+                    realtimeDatabase.reference.child("users").child(user.uid).setValue(newUser).await()
+                    emit(Resource.Success(result))}
             } catch (e: Exception) {
                 emit(Resource.Error(e.localizedMessage ?: "Unknown Error"))
             }
@@ -117,12 +130,13 @@ class AuthRepositoryImpl @Inject constructor(
             try {
                 emit(Resource.Loading()) // Emit loading state
                 firebaseAuth.signOut() // Log out the user
-                emit(Resource.Success(Unit)) // Emit success state
+                emit(Resource.Success(Unit)) // Emit success state with Unit
             } catch (e: Exception) {
                 emit(Resource.Error(e.localizedMessage ?: "Unknown Error")) // Emit error state
             }
         }
     }
+
     }
 
 

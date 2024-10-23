@@ -118,7 +118,9 @@ fun HomeApp(
                 composable(
                     route = ScreensNavigation.ProfileScreen.route,
                 ) {
-                    ProfileScreen(navigateToEditProfile = navController::navigate)
+                    ProfileScreen(
+                        onNavigateToLogin = navController::navigate,
+                        navigateToEditProfile = navController::navigate)
 
                 }
                 composable(

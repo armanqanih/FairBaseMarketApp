@@ -81,7 +81,7 @@ class EditProfileViewModel @Inject constructor(
             updateProfileUseCase(
                 updateProfileData = User(
                     userId = user.userId,
-                    username = _state.value.userNameState,
+                    username = _state.value.userNameState?:"",
                     email = _state.value.emailState,
                 ),
                 profileImageUri = _state.value.profileImageUri
@@ -112,16 +112,16 @@ class EditProfileViewModel @Inject constructor(
             getProfileUseCase(userId).collect { result ->
                 when (result) {
                     is Resource.Success -> {
-                        val user = result.data ?: run {
+                        val user = result.data
+                        if (user != null) {
+                            _state.value = _state.value.copy(
+                                userNameState = user.username ,
+                                emailState = user.email ?: "",
+                                isLoading = false
+                            )
+                        } else {
                             _eventFlow.emit(UiEvent.ShowSnakeBar("Profile Not Found"))
-                            return@collect
                         }
-                        _state.value = _state.value.copy(
-                            user = user,
-                            userNameState =  user.username,
-                            emailState =  user.email?:"",
-                            isLoading = false
-                        )
                     }
                     is Resource.Error -> {
                         _state.value = _state.value.copy(isLoading = false)
@@ -134,5 +134,6 @@ class EditProfileViewModel @Inject constructor(
             }
         }
     }
+
 
 }

@@ -1,45 +1,27 @@
 {
   "project_info": {
-    "project_number": "1051080135345",
-    "firebase_url": "https://marketingapp-ec5a9-default-rtdb.firebaseio.com",
-    "project_id": "marketingapp-ec5a9",
-    "storage_bucket": "marketingapp-ec5a9.appspot.com"
+    "project_number": "245340575577",
+    "firebase_url": "https://movieapp-a37f5-default-rtdb.firebaseio.com",
+    "project_id": "movieapp-a37f5",
+    "storage_bucket": "movieapp-a37f5.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1051080135345:android:422114171666256f68c890",
+        "mobilesdk_app_id": "1:245340575577:android:4132b9db44a96cccacde48",
         "android_client_info": {
           "package_name": "org.lotka.xenon"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "1051080135345-2p402jccr9hrmkihgodscibc3i6braft.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "org.lotka.xenon",
-            "certificate_hash": "ed24e20762eac8473708e514609a218e8a0be0eb"
-          }
-        },
-        {
-          "client_id": "1051080135345-cfu5e2pmfnkv4rolh087v78692o508eu.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB4ybMBdgGMsjAiy1xehMF0AkHGOFVdbBQ"
+          "current_key": "AIzaSyABMXqQUgeCCEwqnPT0wqvRRQJPBU8zHxE"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1051080135345-cfu5e2pmfnkv4rolh087v78692o508eu.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

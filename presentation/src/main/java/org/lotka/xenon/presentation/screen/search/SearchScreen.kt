@@ -126,7 +126,7 @@ fun SearchScreen(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Search Icon",
                             tint = MaterialTheme.colors.onSurface,
-                            )
+                        )
                     },
                     active = state.searchActive,
                     onActiveChange = {
@@ -137,27 +137,32 @@ fun SearchScreen(
             }
         }
     ) {
-
         Spacer(modifier = Modifier.height(SpaceLarge.dp))
-
-        Box(modifier = Modifier.fillMaxSize().padding(it)) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(it)) {
             if (state.isLoading) {
                 CircularProgressIndicator(Modifier.align(Alignment.Center))
             } else if (!state.error.isNullOrEmpty()) {
-                Text(text = state.error, color = MaterialTheme.colors.error, modifier = Modifier.align(Alignment.Center))
+                Text(
+                    text = state.error,
+                    color = MaterialTheme.colors.error,
+                    modifier = Modifier.align(Alignment.Center)
+                )
             } else {
-                LazyColumn (
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = SpaceMedium.dp)
-                    ,
-                     verticalArrangement = Arrangement.spacedBy(SpaceMedium.dp)
-                ){
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = SpaceMedium.dp),
+                    verticalArrangement = Arrangement.spacedBy(SpaceMedium.dp)
+                ) {
                     items(searchList) { item ->
 
                         SearchItemCard(
                             onNavigateTo = {
                                 onNavigateToDetail(
-                                    ScreensNavigation.DetailScreen.route+"/${item.categoryId}")
+                                    ScreensNavigation.DetailScreen.route + "/${item.categoryId}"
+                                )
                             },
                             toolImage = item.picUrl!!.firstOrNull(),
                             nameOfTool = item.title ?: "",

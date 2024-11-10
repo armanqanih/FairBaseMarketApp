@@ -7,6 +7,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -14,6 +15,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -21,6 +23,7 @@ import com.google.android.gms.auth.api.identity.Identity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.lotka.xenon.presentation.compose.StandardScaffold
+import org.lotka.xenon.presentation.screen.search.SearchViewModel
 
 import org.lotka.xenon.presentation.theme.CleanArchitectureMovieAppTheme
 import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
@@ -50,7 +53,7 @@ class HomeActivity : AppCompatActivity() {
                             showBottomBar = currentRoute in listOf(
                                 ScreensNavigation.ProfileScreen.route,
                                 ScreensNavigation.ExploreScreen.route
-                            ),
+                            ) ,
                             modifier = Modifier.fillMaxSize(),
 
                             ) {

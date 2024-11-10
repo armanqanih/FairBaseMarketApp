@@ -52,6 +52,10 @@ fun WishListScreen(
             )
         }
         ) {
+
+
+
+
         LazyColumn(modifier = Modifier
             .fillMaxSize()
             .padding(it)
@@ -60,6 +64,7 @@ fun WishListScreen(
             ) {
             items(itemList){item->
                 Spacer(modifier = Modifier.height(SpaceMedium.dp))
+
                 WishListCard(
                     toolImage = item.picUrl,
                     nameOfTool = item.title.toString(),

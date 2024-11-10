@@ -22,6 +22,7 @@ import org.lotka.xenon.domain.util.Constants.SpaceMedium
 import org.lotka.xenon.domain.util.Constants.SpaceSmall
 import org.lotka.xenon.presentation.compose.StandardButton
 import org.lotka.xenon.presentation.compose.StandardTopBar
+import org.lotka.xenon.presentation.compose.SwipeToDeleteContainer
 import org.lotka.xenon.presentation.screen.my_card.compose.ActionIcon
 import org.lotka.xenon.presentation.screen.my_card.compose.MyOrderCard
 import org.lotka.xenon.presentation.screen.my_card.compose.PaymentMethod
@@ -109,54 +110,40 @@ fun MyCardScreen(
                 }
 
                 itemsIndexed(items) { index, item ->
-                    SwipeableItemWithActions(
-                        isRevealed = item.isOptionRevealed,
-                        onExpanded = {
-                            items[index] = item.copy(isOptionRevealed = true)
-                        },
-                        onCollapsed = {
-                            items[index] = item.copy(isOptionRevealed = false)
-                        },
-                        actions = {
-                            ActionIcon(
-                                onClick = {
-                                    viewModel.removeItemInCard(item.categoryId.toString())
-                                },
-                                backgroundColor = Color.Red,
-                                icon = Icons.Default.Delete,
-                                modifier = Modifier.fillMaxHeight()
-                            )
-                        },
+                    SwipeToDeleteContainer(
+                        item = item,
+                        onDelete = {
+                            viewModel.removeItemInCard(item.categoryId.toString())
+                        }
                     ) {
-
-                        val itemIndex = items.indexOf(item)
-                        if (itemIndex >= 0) {
-                            val toolTotalPrice =
-                                formatPrice((item.price ?: 0.0) * quantities[itemIndex])
-                            MyOrderCard(
-                                nameOfTool = item.title.toString(),
-                                toolPrice = item.price?.let { formatPrice(it) },
-                                toolTotalPrice = toolTotalPrice,
-                                quantityText = quantities[itemIndex].toString(),
-                                onPlusButtonClick = {
-                                    quantities[itemIndex] += 1
-                                    totalPrice = calculateTotalPrice(
-                                        items.map { it.price ?: 0.0 },
-                                        quantities
-                                    ) + deliveryPrice
-                                },
-                                onMinusButtonClick = {
-                                    if (quantities[itemIndex] > 1) {
-                                        quantities[itemIndex] -= 1
+                            val itemIndex = items.indexOf(item)
+                            if (itemIndex >= 0) {
+                                val toolTotalPrice =
+                                    formatPrice((item.price ?: 0.0) * quantities[itemIndex])
+                                MyOrderCard(
+                                    nameOfTool = item.title.toString(),
+                                    toolPrice = item.price?.let { formatPrice(it) },
+                                    toolTotalPrice = toolTotalPrice,
+                                    quantityText = quantities[itemIndex].toString(),
+                                    onPlusButtonClick = {
+                                        quantities[itemIndex] += 1
                                         totalPrice = calculateTotalPrice(
                                             items.map { it.price ?: 0.0 },
                                             quantities
                                         ) + deliveryPrice
-                                    }
-                                },
-                                toolImage = item.picUrl
-                            )
-                        }
+                                    },
+                                    onMinusButtonClick = {
+                                        if (quantities[itemIndex] > 1) {
+                                            quantities[itemIndex] -= 1
+                                            totalPrice = calculateTotalPrice(
+                                                items.map { it.price ?: 0.0 },
+                                                quantities
+                                            ) + deliveryPrice
+                                        }
+                                    },
+                                    toolImage = item.picUrl
+                                )
+                            }
                     }
                 }
             }
@@ -213,29 +200,14 @@ fun MyCardScreen(
                 item {
                     Spacer(modifier = Modifier.height(SpaceSmall.dp))
                 }
-                itemsIndexed(items) { index, item ->
-                    SwipeableItemWithActions(
-                        isRevealed = item.isOptionRevealed,
-                        onExpanded = {
-                            items[index] = item.copy(isOptionRevealed = true)
-                        },
-                        onCollapsed = {
-                            items[index] = item.copy(isOptionRevealed = false)
-                        },
-                        actions = {
-                            ActionIcon(
-                                onClick = {
-                                    viewModel.removeItemInCard(item.categoryId.toString())
-                                },
-                                backgroundColor = Color.Red,
-                                icon = Icons.Default.Delete,
-                                modifier = Modifier.fillMaxHeight()
-                            )
-
-
-                        },
+                itemsIndexed(items, key = { _, item -> item.categoryId }) { index, item ->
+                    SwipeToDeleteContainer(
+                        item = item,
+                        onDelete = {
+                            viewModel.removeItemInCard(item.categoryId.toString())
+                        }
                     ) {
-                        val itemIndex = items.indexOf(item)
+                        val itemIndex = items.indexOfFirst { it.categoryId == item.categoryId }
 
                         if (itemIndex >= 0) {
                             val toolTotalPrice =
@@ -264,10 +236,11 @@ fun MyCardScreen(
                                 toolImage = item.picUrl
                             )
                         }
-                    }
-                }
+                    }}
 
-                item {
+
+
+            item {
                     PricesTextRow(
                         title = "SubTotal",
                         price = "$${

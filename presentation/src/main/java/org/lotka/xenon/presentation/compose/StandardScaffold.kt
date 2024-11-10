@@ -48,11 +48,9 @@ fun StandardScaffold(
     modifier: Modifier = Modifier,
     showBottomBar: Boolean = true,
     content: @Composable () -> Unit,
-
-    ){
-
+    )
+{
     val items = listOf(
-
         BottomNavItem(
             title = "Explore",
             route =

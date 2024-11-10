@@ -43,7 +43,7 @@ import org.lotka.xenon.presentation.ui.navigation.ScreensNavigation
 
 @Composable
 fun HeaderSection (
-    userProfilePicture: String= "",
+    userProfilePicture: String? = "",
     userName: String= "",
     onHeaderClick: ()-> Unit ={}
 ){
@@ -73,7 +73,7 @@ fun HeaderSection (
                 Image(
                     painter = rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(userProfilePicture)
+                            .data(R.drawable.arman)
                             .crossfade(true)
                             .error(android.R.drawable.ic_menu_report_image)
                             .placeholder(android.R.drawable.ic_menu_gallery)

@@ -81,8 +81,7 @@ dependencies {
     // Android MPChart
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
-    // DatePicker
-    implementation("com.github.aliab:Persian-Date-Picker-Dialog:1.7.1")
+
 
     // Date
     implementation("com.github.samanzamani:PersianDate:1.4.0")

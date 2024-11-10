@@ -123,7 +123,7 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(Constants.SpaceLarge.dp))
         HeaderSection(
             userProfilePicture = user?.profileImageUrl?:"",
-            userName = user?.username?:"Arman sherwanii",
+            userName = user?.username?:"Arman Sherwanii",
             onHeaderClick = {
             navigateToEditProfile(
                 ScreensNavigation.EditProfileScreen.route
